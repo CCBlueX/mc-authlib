@@ -19,6 +19,10 @@ Username: `username`, Password: Empty String
 ### Mojang Account
 Username: `example@getfdp.today`, Password: `password`
 
+### Microsoft Account
+Username: `ms@original@mail.com`, Password: `password`
+Username: `ms@M.R3_BAY.token`, Password: Empty String
+
 ## Json Form
 We provide a json form to make data easier to read and write.
 ~~~kotlin

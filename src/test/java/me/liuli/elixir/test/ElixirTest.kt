@@ -1,11 +1,9 @@
 package me.liuli.elixir.test
 
 import com.beust.klaxon.JsonObject
-import me.liuli.elixir.account.CrackedAccount
 import me.liuli.elixir.manage.AccountSerializer
 
 fun main(args: Array<String>) {
-    testMojang()
 }
 
 private fun testCracked() {
@@ -46,4 +44,22 @@ private fun testMojang() {
     mojangAccount.update()
     println(mojangAccount.session)
     println(AccountSerializer.toJson(mojangAccount).toJsonString())
+}
+
+fun testMicrosoftDirect() {
+    val mail = ""
+    val password = ""
+
+    println("--- Microsoft Account Dynamic ---")
+    var microsoftAccount = AccountSerializer.accountInstance("ms@$mail", password)
+    // it will update when login
+    //microsoftAccount.update()
+    println(microsoftAccount.session)
+    println(AccountSerializer.toJson(microsoftAccount).toJsonString())
+
+    println("--- Microsoft Account Static ---")
+    microsoftAccount = AccountSerializer.fromJson(AccountSerializer.toJson(microsoftAccount))
+    microsoftAccount.update()
+    println(microsoftAccount.session)
+    println(AccountSerializer.toJson(microsoftAccount).toJsonString())
 }

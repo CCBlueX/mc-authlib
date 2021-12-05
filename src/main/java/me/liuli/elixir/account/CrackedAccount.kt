@@ -5,7 +5,7 @@ import me.liuli.elixir.compat.Session
 import java.util.*
 
 class CrackedAccount : MinecraftAccount("Cracked") {
-    override var name: String = "Player"
+    override var name = "Player"
 
     override val session: Session
         get() = Session(name, UUID.randomUUID().toString(), "-", "legacy")
