@@ -1,9 +1,11 @@
 package me.liuli.elixir.test
 
 import com.beust.klaxon.JsonObject
+import me.liuli.elixir.account.MicrosoftAccount
 import me.liuli.elixir.manage.AccountSerializer
 
 fun main(args: Array<String>) {
+    testMicrosoftBrowser()
 }
 
 private fun testCracked() {
@@ -62,4 +64,21 @@ fun testMicrosoftDirect() {
     microsoftAccount.update()
     println(microsoftAccount.session)
     println(AccountSerializer.toJson(microsoftAccount).toJsonString())
+}
+
+fun testMicrosoftBrowser() {
+    val microsoftAccount = MicrosoftAccount.buildFromOpenBrowser(object : MicrosoftAccount.OAuthHandler {
+        override fun openUrl(url: String) {
+            println("Open url: $url")
+        }
+
+        override fun authResult(account: MicrosoftAccount) {
+            println("Auth result: ${account.session}")
+            println(AccountSerializer.toJson(account).toJsonString(prettyPrint = true))
+        }
+
+        override fun authError(error: String) {
+            println("Auth error: $error")
+        }
+    })
 }

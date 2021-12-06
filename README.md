@@ -23,6 +23,24 @@ Username: `example@getfdp.today`, Password: `password`
 Username: `ms@original@mail.com`, Password: `password`
 Username: `ms@M.R3_BAY.token`, Password: Empty String
 
+## Microsoft OAuth
+We provide a way to login microsoft account with 2fa.
+~~~kotlin
+val microsoftAccount = MicrosoftAccount.buildFromOpenBrowser(object : MicrosoftAccount.OAuthHandler {
+    override fun openUrl(url: String) {
+        println("Open url: $url")
+    }
+
+    override fun authResult(account: MicrosoftAccount) {
+        println("Auth result: ${account.session}")
+    }
+
+    override fun authError(error: String) {
+        println("Auth error: $error")
+    }
+})
+~~~
+
 ## Json Form
 We provide a json form to make data easier to read and write.
 ~~~kotlin

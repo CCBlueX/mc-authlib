@@ -33,7 +33,7 @@ object AccountSerializer {
         return if (name.startsWith("ms@")) {
             val realName = name.substring(3)
             if(password.isEmpty()) {
-                MicrosoftAccount.buildFromAuthCode(realName)
+                MicrosoftAccount.buildFromAuthCode(realName, MicrosoftAccount.AuthMethod.MICROSOFT)
             } else {
                 MicrosoftAccount.buildFromPassword(realName, password)
             }
