@@ -1,5 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.6.0'
+    id "org.jetbrains.dokka" version "1.6.0"
     id 'java'
     id 'maven-publish'
 }
@@ -16,6 +17,8 @@ repositories {
 }
 
 dependencies {
+    dokkaHtmlPlugin "org.jetbrains.dokka:kotlin-as-java-plugin:1.6.0"
+
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
     implementation 'com.mojang:authlib:1.5.25'
     implementation 'com.beust:klaxon:5.5'
