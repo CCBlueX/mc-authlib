@@ -1,0 +1,21 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.6.0'
+    id 'java'
+}
+
+group = "me.liuli.elixir"
+version = "1.1.0"
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc"
+        url = "https://papermc.io/repo/repository/maven-releases/"
+    }
+}
+
+dependencies {
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
+    implementation 'com.mojang:authlib:1.5.25'
+    implementation 'com.beust:klaxon:5.5'
+}
