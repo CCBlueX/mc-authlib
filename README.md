@@ -1,6 +1,18 @@
 # Elixir
 Elixir is a library designed to make minecraft login easier.
 
+# Usage
+We have a maven repo for this project.
+~~~groovy
+repositories {
+    maven { url = "https://getfdp.today/repo/" }
+}
+
+dependencies {
+    implementation "me.liuli:Elixir:1.1.0"
+}
+~~~
+
 # API
 All APIs are in the test module.
 
