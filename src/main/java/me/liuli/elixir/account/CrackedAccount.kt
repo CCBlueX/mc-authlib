@@ -10,7 +10,7 @@ class CrackedAccount : MinecraftAccount("Cracked") {
     override var name = "Player"
 
     override val session: Session
-        get() = Session(name, UUID.randomUUID().toString(), "-", "legacy")
+        get() = Session(name, UUID.nameUUIDFromBytes(name.toByteArray(Charsets.UTF_8)).toString(), "-", "legacy")
 
     override fun update() {
         // has nothing to update with cracked account

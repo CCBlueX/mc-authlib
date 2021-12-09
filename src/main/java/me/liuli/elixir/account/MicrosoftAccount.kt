@@ -146,8 +146,8 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
         /**
          * Create a new [MicrosoftAccount] from OAuth
          */
-        fun buildFromOpenBrowser(handler: OAuthHandler) {
-            OAuthServer(handler).start()
+        fun buildFromOpenBrowser(handler: OAuthHandler): OAuthServer {
+            return OAuthServer(handler).also { it.start() }
         }
 
         fun replaceKeys(method: AuthMethod, string: String)
