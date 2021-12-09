@@ -1,7 +1,9 @@
 package me.liuli.elixir.account
 
-import com.beust.klaxon.JsonObject
+import com.google.gson.JsonObject
 import me.liuli.elixir.compat.Session
+import me.liuli.elixir.utils.set
+import me.liuli.elixir.utils.string
 import java.util.*
 
 class CrackedAccount : MinecraftAccount("Cracked") {
@@ -19,6 +21,6 @@ class CrackedAccount : MinecraftAccount("Cracked") {
     }
 
     override fun fromRawJson(json: JsonObject) {
-        name = json["name"] as String
+        name = json.string("name")!!
     }
 }

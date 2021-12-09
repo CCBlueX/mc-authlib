@@ -1,10 +1,12 @@
 package me.liuli.elixir.manage
 
-import com.beust.klaxon.JsonObject
+import com.google.gson.JsonObject
 import me.liuli.elixir.account.CrackedAccount
 import me.liuli.elixir.account.MicrosoftAccount
 import me.liuli.elixir.account.MinecraftAccount
 import me.liuli.elixir.account.MojangAccount
+import me.liuli.elixir.utils.set
+import me.liuli.elixir.utils.string
 
 object AccountSerializer {
     /**
@@ -21,7 +23,7 @@ object AccountSerializer {
      * read [MinecraftAccount] from [json]
      */
     fun fromJson(json: JsonObject): MinecraftAccount {
-        val account = Class.forName(json["type"].toString()).newInstance() as MinecraftAccount
+        val account = Class.forName(json.string("type")!!).newInstance() as MinecraftAccount
         account.fromRawJson(json)
         return account
     }

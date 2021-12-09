@@ -1,11 +1,11 @@
 package me.liuli.elixir.account
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Klaxon
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import me.liuli.elixir.compat.OAuthServer
 import me.liuli.elixir.compat.Session
 import me.liuli.elixir.exception.LoginException
-import me.liuli.elixir.utils.HttpUtils
+import me.liuli.elixir.utils.*
 
 class MicrosoftAccount : MinecraftAccount("Microsoft") {
     override var name = "UNKNOWN"
@@ -31,27 +31,27 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
         val jsonPostHeader = mapOf("Content-Type" to "application/json", "Accept" to "application/json")
 
         // get the microsoft access token
-        val msRefreshJson = Klaxon().parseJsonObject(HttpUtils.make(XBOX_AUTH_URL, "POST", replaceKeys(authMethod, XBOX_REFRESH_DATA) + refreshToken,
-            mapOf("Content-Type" to "application/x-www-form-urlencoded")).inputStream.reader(Charsets.UTF_8))
+        val msRefreshJson = JsonParser().parse(HttpUtils.make(XBOX_AUTH_URL, "POST", replaceKeys(authMethod, XBOX_REFRESH_DATA) + refreshToken,
+            mapOf("Content-Type" to "application/x-www-form-urlencoded")).inputStream.reader(Charsets.UTF_8)).asJsonObject
         val msAccessToken = msRefreshJson.string("access_token") ?: throw LoginException("Microsoft access token is null")
         // refresh token is changed after refresh
         refreshToken = msRefreshJson.string("refresh_token") ?: throw LoginException("Microsoft new refresh token is null")
 
         // authenticate with XBL
-        val xblJson = Klaxon().parseJsonObject(HttpUtils.make(XBOX_XBL_URL, "POST", XBOX_XBL_DATA.replace("<rps_ticket>", authMethod.rpsTicketRule.replace("<access_token>", msAccessToken)), jsonPostHeader).inputStream.reader(Charsets.UTF_8))
+        val xblJson = JsonParser().parse(HttpUtils.make(XBOX_XBL_URL, "POST", XBOX_XBL_DATA.replace("<rps_ticket>", authMethod.rpsTicketRule.replace("<access_token>", msAccessToken)), jsonPostHeader).inputStream.reader(Charsets.UTF_8)).asJsonObject
         val xblToken = xblJson.string("Token") ?: throw LoginException("Microsoft XBL token is null")
-        val userhash = xblJson.obj("DisplayClaims")?.array<JsonObject>("xui")?.get(0)?.string("uhs") ?: throw LoginException("Microsoft XBL userhash is null")
+        val userhash = xblJson.obj("DisplayClaims")?.array("xui")?.get(0)?.asJsonObject?.string("uhs") ?: throw LoginException("Microsoft XBL userhash is null")
 
         // authenticate with XSTS
-        val xstsJson = Klaxon().parseJsonObject(HttpUtils.make(XBOX_XSTS_URL, "POST", XBOX_XSTS_DATA.replace("<xbl_token>", xblToken), jsonPostHeader).inputStream.reader(Charsets.UTF_8))
+        val xstsJson = JsonParser().parse(HttpUtils.make(XBOX_XSTS_URL, "POST", XBOX_XSTS_DATA.replace("<xbl_token>", xblToken), jsonPostHeader).inputStream.reader(Charsets.UTF_8)).asJsonObject
         val xstsToken = xstsJson.string("Token") ?: throw LoginException("Microsoft XSTS token is null")
 
         // get the minecraft access token
-        val mcJson = Klaxon().parseJsonObject(HttpUtils.make(MC_AUTH_URL, "POST", MC_AUTH_DATA.replace("<userhash>", userhash).replace("<xsts_token>", xstsToken), jsonPostHeader).inputStream.reader(Charsets.UTF_8))
+        val mcJson = JsonParser().parse(HttpUtils.make(MC_AUTH_URL, "POST", MC_AUTH_DATA.replace("<userhash>", userhash).replace("<xsts_token>", xstsToken), jsonPostHeader).inputStream.reader(Charsets.UTF_8)).asJsonObject
         accessToken = mcJson.string("access_token") ?: throw LoginException("Minecraft access token is null")
 
         // get the minecraft account profile
-        val mcProfileJson = Klaxon().parseJsonObject(HttpUtils.make(MC_PROFILE_URL, "GET", "", mapOf("Authorization" to "Bearer $accessToken")).inputStream.reader(Charsets.UTF_8))
+        val mcProfileJson = JsonParser().parse(HttpUtils.make(MC_PROFILE_URL, "GET", "", mapOf("Authorization" to "Bearer $accessToken")).inputStream.reader(Charsets.UTF_8)).asJsonObject
         name = mcProfileJson.string("name") ?: throw LoginException("Minecraft account name is null")
         uuid = mcProfileJson.string("id") ?: throw LoginException("Minecraft account uuid is null")
     }
@@ -63,9 +63,9 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
     }
 
     override fun fromRawJson(json: JsonObject) {
-        name = json["name"] as String
-        refreshToken = json["refreshToken"] as String
-        authMethod = AuthMethod.values().find { it.name.equals(json["authMethod"] as String?, true) } ?: AuthMethod.MICROSOFT
+        name = json.string("name")!!
+        refreshToken = json.string("refreshToken")!!
+        authMethod = AuthMethod.values().find { it.name.equals(json.string("authMethod"), true) } ?: AuthMethod.MICROSOFT
     }
 
     companion object {
@@ -85,10 +85,10 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
          * Create a new [MicrosoftAccount] from a microsoft account authenticate [code]
          */
         fun buildFromAuthCode(code: String, method: AuthMethod): MicrosoftAccount {
-            val data = Klaxon().parseJsonObject(HttpUtils.make(XBOX_AUTH_URL, "POST", replaceKeys(method, XBOX_AUTH_DATA) + code, mapOf("Content-Type" to "application/x-www-form-urlencoded")).inputStream.reader(Charsets.UTF_8))
-            return if(data.containsKey("refresh_token")) {
+            val data = JsonParser().parse(HttpUtils.make(XBOX_AUTH_URL, "POST", replaceKeys(method, XBOX_AUTH_DATA) + code, mapOf("Content-Type" to "application/x-www-form-urlencoded")).inputStream.reader(Charsets.UTF_8)).asJsonObject
+            return if(data.has("refresh_token")) {
                 MicrosoftAccount().also {
-                    it.refreshToken = data["refresh_token"] as String
+                    it.refreshToken = data.string("refresh_token")!!
                     it.authMethod = method
                     it.update()
                 }

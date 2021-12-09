@@ -1,11 +1,16 @@
 package me.liuli.elixir.test
 
-import com.beust.klaxon.JsonObject
+import com.google.gson.JsonObject
 import me.liuli.elixir.account.MicrosoftAccount
 import me.liuli.elixir.manage.AccountSerializer
+import me.liuli.elixir.utils.set
+import me.liuli.elixir.utils.toJsonString
 
 fun main(args: Array<String>) {
+    testCracked()
+    testMojang()
     testMicrosoftBrowser()
+    testMicrosoftDirect()
 }
 
 private fun testCracked() {

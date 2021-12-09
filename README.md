@@ -56,6 +56,6 @@ val microsoftAccount = MicrosoftAccount.buildFromOpenBrowser(object : MicrosoftA
 ## Json Form
 We provide a json form to make data easier to read and write.
 ~~~kotlin
-me.liuli.elixir.manage.AccountSerializer.toJson(me.liuli.elixir.account.MinecraftAccount) : com.beust.klaxon.JsonObject
-me.liuli.elixir.manage.AccountSerializer.fromJson(com.beust.klaxon.JsonObject) : me.liuli.elixir.account.MinecraftAccount
+me.liuli.elixir.manage.AccountSerializer.toJson(me.liuli.elixir.account.MinecraftAccount) : com.google.gson.JsonObject
+me.liuli.elixir.manage.AccountSerializer.fromJson(com.google.gson.JsonObject) : me.liuli.elixir.account.MinecraftAccount
 ~~~

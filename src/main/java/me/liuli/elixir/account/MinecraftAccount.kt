@@ -1,6 +1,6 @@
 package me.liuli.elixir.account
 
-import com.beust.klaxon.JsonObject
+import com.google.gson.JsonObject
 import me.liuli.elixir.compat.Session
 
 abstract class MinecraftAccount(val type: String) {

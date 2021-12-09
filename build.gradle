@@ -21,7 +21,6 @@ dependencies {
 
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
     implementation 'com.mojang:authlib:1.5.25'
-    implementation 'com.beust:klaxon:5.5'
 }
 
 publishing {

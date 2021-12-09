@@ -1,6 +1,6 @@
 package me.liuli.elixir.account
 
-import com.beust.klaxon.JsonObject
+import com.google.gson.JsonObject
 import com.mojang.authlib.Agent
 import com.mojang.authlib.exceptions.AuthenticationException
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException
@@ -8,6 +8,8 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import me.liuli.elixir.compat.Session
 import me.liuli.elixir.exception.LoginException
+import me.liuli.elixir.utils.set
+import me.liuli.elixir.utils.string
 import java.net.Proxy
 
 class MojangAccount : MinecraftAccount("Mojang") {
@@ -49,7 +51,7 @@ class MojangAccount : MinecraftAccount("Mojang") {
     }
 
     override fun fromRawJson(json: JsonObject) {
-        name = json["name"] as String
-        password = json["password"] as String
+        name = json.string("name")!!
+        password = json.string("password")!!
     }
 }
