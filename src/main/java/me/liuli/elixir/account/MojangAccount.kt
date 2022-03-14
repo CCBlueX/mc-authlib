@@ -12,6 +12,7 @@ import me.liuli.elixir.utils.set
 import me.liuli.elixir.utils.string
 import java.net.Proxy
 
+@Deprecated("Mojang removed support for MojangAccount")
 class MojangAccount : MinecraftAccount("Mojang") {
     override var name = ""
     var password = ""

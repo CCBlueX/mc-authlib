@@ -8,18 +8,20 @@ import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 
-class OAuthServer(val handler: MicrosoftAccount.OAuthHandler) {
-    private val httpServer = HttpServer.create(InetSocketAddress("localhost", 1919), 0)
+class OAuthServer(val handler: MicrosoftAccount.OAuthHandler,
+                  private val authMethod: MicrosoftAccount.AuthMethod = MicrosoftAccount.AuthMethod.AZURE_APP,
+                  private val httpServer: HttpServer = HttpServer.create(InetSocketAddress("localhost", 1919), 0),
+                  private val context: String = "/login") {
     private val threadPoolExecutor = Executors.newFixedThreadPool(10) as ThreadPoolExecutor
 
     /**
      * Start the server.
      */
     fun start() {
-        httpServer.createContext("/login", OAuthHttpHandler(this))
+        httpServer.createContext(context, OAuthHttpHandler(this, authMethod))
         httpServer.executor = threadPoolExecutor
         httpServer.start()
-        handler.openUrl(MicrosoftAccount.replaceKeys(MicrosoftAccount.AuthMethod.AZURE_APP, MicrosoftAccount.XBOX_PRE_AUTH_URL))
+        handler.openUrl(MicrosoftAccount.replaceKeys(authMethod, MicrosoftAccount.XBOX_PRE_AUTH_URL))
     }
 
     /**
@@ -36,12 +38,13 @@ class OAuthServer(val handler: MicrosoftAccount.OAuthHandler) {
     /**
      * The handler of the OAuth redirect http request.
      */
-    class OAuthHttpHandler(private val server: OAuthServer) : HttpHandler {
+    class OAuthHttpHandler(private val server: OAuthServer, private val authMethod: MicrosoftAccount.AuthMethod) : HttpHandler {
+
         override fun handle(exchange: HttpExchange) {
             val query = exchange.requestURI.query.split("&").map { it.split("=") }.associate { it[0] to it[1] }
             if(query.containsKey("code")) {
                 try {
-                    server.handler.authResult(MicrosoftAccount.buildFromAuthCode(query["code"]!!, MicrosoftAccount.AuthMethod.AZURE_APP))
+                    server.handler.authResult(MicrosoftAccount.buildFromAuthCode(query["code"]!!, authMethod))
                     response(exchange, "Login Success", 200)
                 } catch (e: Exception) {
                     server.handler.authError(e.toString())

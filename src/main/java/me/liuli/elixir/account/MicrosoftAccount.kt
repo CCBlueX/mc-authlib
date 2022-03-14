@@ -59,13 +59,13 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
     override fun toRawJson(json: JsonObject) {
         json["name"] = name
         json["refreshToken"] = refreshToken
-        json["authMethod"] = authMethod.name
+        json["authMethod"] = AuthMethod.registry.filterValues { it == authMethod }.keys.firstOrNull() ?: throw LoginException("Unregistered auth method")
     }
 
     override fun fromRawJson(json: JsonObject) {
         name = json.string("name")!!
         refreshToken = json.string("refreshToken")!!
-        authMethod = AuthMethod.values().find { it.name.equals(json.string("authMethod"), true) } ?: AuthMethod.MICROSOFT
+        authMethod = AuthMethod.registry[json.string("authMethod")!!] ?: throw LoginException("Unregistered auth method")
     }
 
     companion object {
@@ -102,7 +102,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
          *
          * @credit https://github.com/XboxReplay/xboxlive-auth
          */
-        fun buildFromPassword(username: String, password: String): MicrosoftAccount {
+        fun buildFromPassword(username: String, password: String, authMethod: AuthMethod = AuthMethod.MICROSOFT): MicrosoftAccount {
             fun findArgs(resp: String, arg: String): String {
                 return if (resp.contains(arg)) {
                     resp.substring(resp.indexOf("$arg:'") + arg.length + 2).let {
@@ -113,10 +113,8 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
                 }
             }
 
-            val method = AuthMethod.MICROSOFT
-
             // first, get the pre-auth url
-            val preAuthConnection = HttpUtils.make(replaceKeys(method, XBOX_PRE_AUTH_URL), "GET")
+            val preAuthConnection = HttpUtils.make(replaceKeys(authMethod, XBOX_PRE_AUTH_URL), "GET")
             val html = preAuthConnection.inputStream.reader().readText()
             val cookies = (preAuthConnection.headerFields["Set-Cookie"] ?: emptyList()).joinToString(";")
             val urlPost = findArgs(html, "urlPost")
@@ -140,14 +138,14 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
             authConnection.disconnect()
 
             // pass the code to [buildFromAuthCode]
-            return buildFromAuthCode(code, method)
+            return buildFromAuthCode(code, authMethod)
         }
 
         /**
          * Create a new [MicrosoftAccount] from OAuth
          */
-        fun buildFromOpenBrowser(handler: OAuthHandler): OAuthServer {
-            return OAuthServer(handler).also { it.start() }
+        fun buildFromOpenBrowser(handler: OAuthHandler, authMethod: AuthMethod = AuthMethod.AZURE_APP): OAuthServer {
+            return OAuthServer(handler, authMethod).also { it.start() }
         }
 
         fun replaceKeys(method: AuthMethod, string: String)
@@ -157,9 +155,18 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
                 .replace("<scope>", method.scope)
     }
 
-    enum class AuthMethod(val clientId: String, val clientSecret: String, val redirectUri: String, val scope: String, val rpsTicketRule: String) {
-        MICROSOFT("00000000441cc96b", "", "https://login.live.com/oauth20_desktop.srf", "service::user.auth.xboxlive.com::MBI_SSL", "<access_token>"),
-        AZURE_APP("c6cd7b0f-077d-4fcf-ab5c-9659576e38cb", "vI87Q~GkhVHJSLN5WKBbEKbK0TJc9YRDyOYc5", "http://localhost:1919/login", "XboxLive.signin%20offline_access", "d=<access_token>")
+    class AuthMethod(val clientId: String, val clientSecret: String, val redirectUri: String, val scope: String, val rpsTicketRule: String) {
+        companion object {
+            val registry = mutableMapOf<String, AuthMethod>()
+
+            val MICROSOFT = AuthMethod("00000000441cc96b", "", "https://login.live.com/oauth20_desktop.srf", "service::user.auth.xboxlive.com::MBI_SSL", "<access_token>")
+            val AZURE_APP = AuthMethod("c6cd7b0f-077d-4fcf-ab5c-9659576e38cb", "vI87Q~GkhVHJSLN5WKBbEKbK0TJc9YRDyOYc5", "http://localhost:1919/login", "XboxLive.signin%20offline_access", "d=<access_token>")
+
+            init {
+                registry["MICROSOFT"] = MICROSOFT
+                registry["AZURE_APP"] = AZURE_APP
+            }
+        }
     }
 
     interface OAuthHandler {

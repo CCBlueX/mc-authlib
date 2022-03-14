@@ -9,8 +9,11 @@ import me.liuli.elixir.utils.toJsonString
 fun main(args: Array<String>) {
     testCracked()
     testMojang()
-    testMicrosoftBrowser()
-    testMicrosoftDirect()
+    val custom = MicrosoftAccount.AuthMethod("c6cd7b0f-077d-4fcf-ab5c-9659576e38cb", "vI87Q~GkhVHJSLN5WKBbEKbK0TJc9YRDyOYc5", "http://localhost:1919/login", "XboxLive.signin%20offline_access", "d=<access_token>").also {
+        MicrosoftAccount.AuthMethod.Companion.registry["CUSTOM"] = it
+    }
+    testMicrosoftBrowser(custom)
+    testMicrosoftDirect() // you can only use microsoft official key to login with direct mode
 }
 
 private fun testCracked() {
@@ -71,7 +74,7 @@ fun testMicrosoftDirect() {
     println(AccountSerializer.toJson(microsoftAccount).toJsonString())
 }
 
-fun testMicrosoftBrowser() {
+fun testMicrosoftBrowser(authMethod: MicrosoftAccount.AuthMethod) {
     val microsoftAccount = MicrosoftAccount.buildFromOpenBrowser(object : MicrosoftAccount.OAuthHandler {
         override fun openUrl(url: String) {
             println("Open url: $url")
@@ -85,5 +88,5 @@ fun testMicrosoftBrowser() {
         override fun authError(error: String) {
             println("Auth error: $error")
         }
-    })
+    }, authMethod)
 }
