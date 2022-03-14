@@ -17,9 +17,9 @@ repositories {
 }
 
 dependencies {
-    dokkaHtmlPlugin "org.jetbrains.dokka:kotlin-as-java-plugin:1.6.0"
+    dokkaHtmlPlugin 'org.jetbrains.dokka:kotlin-as-java-plugin:1.6.10'
 
-	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.10'
     implementation 'com.mojang:authlib:1.5.25'
 }
 
