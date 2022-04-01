@@ -9,7 +9,7 @@ import me.liuli.elixir.utils.toJsonString
 fun main(args: Array<String>) {
     testCracked()
     testMojang()
-    val custom = MicrosoftAccount.AuthMethod("c6cd7b0f-077d-4fcf-ab5c-9659576e38cb", "vI87Q~GkhVHJSLN5WKBbEKbK0TJc9YRDyOYc5", "http://localhost:1919/login", "XboxLive.signin%20offline_access", "d=<access_token>").also {
+    val custom = MicrosoftAccount.AuthMethod("", "http://localhost:1919/login", "XboxLive.signin%20offline_access", "d=<access_token>").also {
         MicrosoftAccount.AuthMethod.Companion.registry["CUSTOM"] = it
     }
     testMicrosoftBrowser(custom)

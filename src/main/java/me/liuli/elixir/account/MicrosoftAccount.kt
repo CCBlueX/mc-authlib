@@ -31,8 +31,11 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
         val jsonPostHeader = mapOf("Content-Type" to "application/json", "Accept" to "application/json")
 
         // get the microsoft access token
-        val msRefreshJson = JsonParser().parse(HttpUtils.make(XBOX_AUTH_URL, "POST", replaceKeys(authMethod, XBOX_REFRESH_DATA) + refreshToken,
-            mapOf("Content-Type" to "application/x-www-form-urlencoded")).inputStream.reader(Charsets.UTF_8)).asJsonObject
+        val msRefreshJson = JsonParser().parse(
+            HttpUtils.make(
+                XBOX_AUTH_URL, "POST", replaceKeys(authMethod, XBOX_REFRESH_DATA) + refreshToken,
+            mapOf("Content-Type" to "application/x-www-form-urlencoded")).inputStream.reader(Charsets.UTF_8)
+        ).asJsonObject
         val msAccessToken = msRefreshJson.string("access_token") ?: throw LoginException("Microsoft access token is null")
         // refresh token is changed after refresh
         refreshToken = msRefreshJson.string("refresh_token") ?: throw LoginException("Microsoft new refresh token is null")
@@ -69,14 +72,15 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
     }
 
     companion object {
+
         const val XBOX_PRE_AUTH_URL = "https://login.live.com/oauth20_authorize.srf?client_id=<client_id>&redirect_uri=<redirect_uri>&response_type=code&display=touch&scope=<scope>"
         const val XBOX_AUTH_URL = "https://login.live.com/oauth20_token.srf"
         const val XBOX_XBL_URL = "https://user.auth.xboxlive.com/user/authenticate"
         const val XBOX_XSTS_URL = "https://xsts.auth.xboxlive.com/xsts/authorize"
         const val MC_AUTH_URL = "https://api.minecraftservices.com/authentication/login_with_xbox"
         const val MC_PROFILE_URL = "https://api.minecraftservices.com/minecraft/profile"
-        const val XBOX_AUTH_DATA = "client_id=<client_id>&client_secret=<client_secret>&redirect_uri=<redirect_uri>&grant_type=authorization_code&code="
-        const val XBOX_REFRESH_DATA = "client_id=<client_id>&client_secret=<client_secret>&scope=<scope>&grant_type=refresh_token&redirect_uri=<redirect_uri>&refresh_token="
+        const val XBOX_AUTH_DATA = "client_id=<client_id>&redirect_uri=<redirect_uri>&grant_type=authorization_code&code="
+        const val XBOX_REFRESH_DATA = "client_id=<client_id>&scope=<scope>&grant_type=refresh_token&redirect_uri=<redirect_uri>&refresh_token="
         const val XBOX_XBL_DATA = """{"Properties":{"AuthMethod":"RPS","SiteName":"user.auth.xboxlive.com","RpsTicket":"<rps_ticket>"},"RelyingParty":"http://auth.xboxlive.com","TokenType":"JWT"}"""
         const val XBOX_XSTS_DATA = """{"Properties":{"SandboxId":"RETAIL","UserTokens":["<xbl_token>"]},"RelyingParty":"rp://api.minecraftservices.com/","TokenType":"JWT"}"""
         const val MC_AUTH_DATA = """{"identityToken":"XBL3.0 x=<userhash>;<xsts_token>"}"""
@@ -150,17 +154,16 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
 
         fun replaceKeys(method: AuthMethod, string: String)
             = string.replace("<client_id>", method.clientId)
-                .replace("<client_secret>", method.clientSecret)
                 .replace("<redirect_uri>", method.redirectUri)
                 .replace("<scope>", method.scope)
     }
 
-    class AuthMethod(val clientId: String, val clientSecret: String, val redirectUri: String, val scope: String, val rpsTicketRule: String) {
+    class AuthMethod(val clientId: String, val redirectUri: String, val scope: String, val rpsTicketRule: String) {
         companion object {
             val registry = mutableMapOf<String, AuthMethod>()
 
-            val MICROSOFT = AuthMethod("00000000441cc96b", "", "https://login.live.com/oauth20_desktop.srf", "service::user.auth.xboxlive.com::MBI_SSL", "<access_token>")
-            val AZURE_APP = AuthMethod("c6cd7b0f-077d-4fcf-ab5c-9659576e38cb", "vI87Q~GkhVHJSLN5WKBbEKbK0TJc9YRDyOYc5", "http://localhost:1919/login", "XboxLive.signin%20offline_access", "d=<access_token>")
+            val MICROSOFT = AuthMethod("00000000441cc96b", "https://login.live.com/oauth20_desktop.srf", "service::user.auth.xboxlive.com::MBI_SSL", "<access_token>")
+            val AZURE_APP = AuthMethod("0add8caf-2cc6-4546-b798-c3d171217dd9", "http://localhost:1919/login", "XboxLive.signin%20offline_access", "d=<access_token>")
 
             init {
                 registry["MICROSOFT"] = MICROSOFT
