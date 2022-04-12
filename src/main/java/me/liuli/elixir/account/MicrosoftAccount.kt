@@ -8,7 +8,7 @@ import me.liuli.elixir.exception.LoginException
 import me.liuli.elixir.utils.*
 
 class MicrosoftAccount : MinecraftAccount("Microsoft") {
-    override var name = "UNKNOWN"
+    override var name = ""
     private var uuid = ""
     private var accessToken = ""
     private var refreshToken = ""

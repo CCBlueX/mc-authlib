@@ -7,7 +7,7 @@ import me.liuli.elixir.utils.string
 import java.util.*
 
 class CrackedAccount : MinecraftAccount("Cracked") {
-    override var name = "Player"
+    override var name = ""
 
     override val session: Session
         get() = Session(name, UUID.nameUUIDFromBytes(name.toByteArray(Charsets.UTF_8)).toString(), "-", "legacy")

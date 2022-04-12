@@ -14,14 +14,16 @@ import java.net.Proxy
 
 @Deprecated("Mojang removed support for MojangAccount")
 class MojangAccount : MinecraftAccount("Mojang") {
+
     override var name = ""
+    var email = ""
     var password = ""
     private var uuid = ""
     private var accessToken = ""
 
     override val session: Session
         get() {
-            if(uuid.isEmpty() || accessToken.isEmpty()) {
+            if(name.isEmpty() || uuid.isEmpty() || accessToken.isEmpty()) {
                 update()
             }
 
@@ -31,7 +33,7 @@ class MojangAccount : MinecraftAccount("Mojang") {
     override fun update() {
         val userAuthentication = YggdrasilAuthenticationService(Proxy.NO_PROXY, "").createUserAuthentication(Agent.MINECRAFT) as YggdrasilUserAuthentication
 
-        userAuthentication.setUsername(name)
+        userAuthentication.setUsername(email)
         userAuthentication.setPassword(password)
 
         try {
@@ -48,11 +50,13 @@ class MojangAccount : MinecraftAccount("Mojang") {
 
     override fun toRawJson(json: JsonObject) {
         json["name"] = name
+        json["email"] = email
         json["password"] = password
     }
 
     override fun fromRawJson(json: JsonObject) {
         name = json.string("name")!!
+        email = json.string("email")!!
         password = json.string("password")!!
     }
 }
