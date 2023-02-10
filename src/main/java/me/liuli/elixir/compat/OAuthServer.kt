@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
 import me.liuli.elixir.account.MicrosoftAccount
+import java.io.FileNotFoundException
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
@@ -46,6 +47,11 @@ class OAuthServer(val handler: MicrosoftAccount.OAuthHandler,
                 try {
                     server.handler.authResult(MicrosoftAccount.buildFromAuthCode(query["code"]!!, authMethod))
                     response(exchange, "Login Success", 200)
+                } catch (e: FileNotFoundException) {
+                    val errorMessage = "No minecraft account associated with this Microsoft account. Please check your account and try again."
+
+                    server.handler.authError(errorMessage)
+                    response(exchange, "Error: $errorMessage", 500)
                 } catch (e: Exception) {
                     server.handler.authError(e.toString())
                     response(exchange, "Error: $e", 500)
