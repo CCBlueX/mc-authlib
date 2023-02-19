@@ -73,7 +73,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
 
     companion object {
 
-        const val XBOX_PRE_AUTH_URL = "https://login.live.com/oauth20_authorize.srf?client_id=<client_id>&redirect_uri=<redirect_uri>&response_type=code&display=touch&scope=<scope>"
+        const val XBOX_PRE_AUTH_URL = "https://login.live.com/oauth20_authorize.srf?client_id=<client_id>&redirect_uri=<redirect_uri>&response_type=code&display=touch&scope=<scope>&prompt=select_account"
         const val XBOX_AUTH_URL = "https://login.live.com/oauth20_token.srf"
         const val XBOX_XBL_URL = "https://user.auth.xboxlive.com/user/authenticate"
         const val XBOX_XSTS_URL = "https://xsts.auth.xboxlive.com/xsts/authorize"
