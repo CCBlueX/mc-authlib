@@ -7,10 +7,7 @@ import com.thealtening.api.TheAltening
 import com.thealtening.api.TheAlteningException
 import net.ccbluex.liquidbounce.authlib.compat.GameProfile
 import net.ccbluex.liquidbounce.authlib.compat.Session
-import net.ccbluex.liquidbounce.authlib.utils.MojangApi
-import net.ccbluex.liquidbounce.authlib.utils.int
-import net.ccbluex.liquidbounce.authlib.utils.set
-import net.ccbluex.liquidbounce.authlib.utils.string
+import net.ccbluex.liquidbounce.authlib.utils.*
 import net.ccbluex.liquidbounce.authlib.yggdrasil.YggdrasilUserAuthentication
 import java.net.Proxy
 import java.util.*
@@ -64,9 +61,7 @@ class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening"
      */
     override fun fromRawJson(json: JsonObject) {
         val name = json.string("name")!!
-        val uuid = runCatching {
-            UUID.fromString(json.string("uuid")!!)
-        }.getOrElse { MojangApi.getUuid(name) }
+        val uuid = if (json.has("uuid")) parseUuid(json.string("uuid")!!) else null
         profile = GameProfile(name, uuid!!)
 
         accessToken = json.string("token")!!
@@ -93,7 +88,7 @@ class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening"
     }
 
     override fun login(): Pair<Session, YggdrasilAuthenticationService> {
-        if (profile == null) {
+        if (profile?.uuid == null) {
             refresh()
         }
 

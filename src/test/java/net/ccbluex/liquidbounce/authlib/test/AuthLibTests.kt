@@ -51,6 +51,13 @@ fun testMicrosoftBrowser(authMethod: MicrosoftAccount.AuthMethod) {
 
 private fun testAltening() {
     val apiToken = ""
+    val accountToken = ""
+
+    println("--- Altening Account Token ---")
+
+    val alteningAccount2 = AlteningAccount.fromToken(accountToken)
+    println(alteningAccount2.login())
+    println(AccountSerializer.toJson(alteningAccount2).toJsonString())
 
     println("--- Altening Account API ---")
     val alteningAccount = AlteningAccount.generateAccount(apiToken)

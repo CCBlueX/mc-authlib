@@ -18,7 +18,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
     private var authMethod = AuthMethod.MICROSOFT
 
     override fun login(): Pair<Session, YggdrasilAuthenticationService> {
-        if (profile == null || accessToken.isEmpty()) {
+        if (profile?.uuid == null || accessToken.isEmpty()) {
             refresh()
         }
 
@@ -66,7 +66,8 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
             ?: error("Microsoft XBL userhash is null")
 
         // authenticate with XSTS
-        val (xstsCode, xstsText) = HttpUtils.post(XBOX_XSTS_URL, XBOX_XSTS_DATA.replace("<xbl_token>", xblToken), jsonPostHeader)
+        val (xstsCode, xstsText) = HttpUtils.post(XBOX_XSTS_URL,
+            XBOX_XSTS_DATA.replace("<xbl_token>", xblToken), jsonPostHeader)
 
         if (xstsCode != 200) {
             error("Failed to get Microsoft XSTS token")
@@ -121,10 +122,8 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
      */
     override fun fromRawJson(json: JsonObject) {
         val name = json.string("name")!!
-        val uuid = runCatching {
-            UUID.fromString(json.string("uuid")!!)
-        }.getOrElse { MojangApi.getUuid(name) }
-        profile = GameProfile(name, uuid!!)
+        val uuid = if (json.has("uuid")) parseUuid(json.string("uuid")!!) else null
+        profile = GameProfile(name, uuid)
         refreshToken = json.string("refreshToken")!!
         authMethod = AuthMethod.valueOf(json.string("authMethod")  ?: error("No auth method in json"))
     }

@@ -5,7 +5,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
 import com.mojang.authlib.yggdrasil.YggdrasilEnvironment
 import net.ccbluex.liquidbounce.authlib.compat.GameProfile
 import net.ccbluex.liquidbounce.authlib.compat.Session
-import net.ccbluex.liquidbounce.authlib.utils.MojangApi
+import net.ccbluex.liquidbounce.authlib.yggdrasil.GameProfileRepository
 import net.ccbluex.liquidbounce.authlib.utils.parseUuid
 import net.ccbluex.liquidbounce.authlib.utils.set
 import net.ccbluex.liquidbounce.authlib.utils.string
@@ -25,14 +25,14 @@ class CrackedAccount(private val username: String) : MinecraftAccount("Cracked")
 
     override fun refresh() {
         val uuid = runCatching {
-            MojangApi.getUuid(username)
+            GameProfileRepository().fetchUuidByUsername(username)
         }.getOrNull() ?: UUID.randomUUID()
 
         profile = GameProfile(username, uuid)
     }
 
     override fun login(): Pair<Session, YggdrasilAuthenticationService> {
-        if (profile == null) {
+        if (profile?.uuid == null) {
             refresh()
         }
 
@@ -49,9 +49,7 @@ class CrackedAccount(private val username: String) : MinecraftAccount("Cracked")
 
     override fun fromRawJson(json: JsonObject) {
         val name = json.string("name")!!
-        val uuid = runCatching {
-            parseUuid(json.string("uuid")!!)
-        }.getOrElse { MojangApi.getUuid(name) }
-        profile = GameProfile(name, uuid!!)
+        val uuid = if (json.has("uuid")) parseUuid(json.string("uuid")!!) else null
+        profile = GameProfile(name, uuid)
     }
 }
