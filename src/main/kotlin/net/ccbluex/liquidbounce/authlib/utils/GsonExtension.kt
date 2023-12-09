@@ -1,9 +1,7 @@
-package me.liuli.elixir.utils
+package net.ccbluex.liquidbounce.authlib.utils
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
+import com.google.gson.*
+import com.google.gson.reflect.TypeToken
 
 // makes gson api access much easier in Kotlin
 
@@ -148,3 +146,4 @@ fun JsonArray.array(index: Int): JsonArray? {
     }
 }
 
+inline fun <reified T> decode(stringJson: String): T = Gson().fromJson(stringJson, object : TypeToken<T>() {}.type)
