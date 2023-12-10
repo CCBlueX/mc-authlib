@@ -44,7 +44,9 @@ class CrackedAccount(private val username: String) : MinecraftAccount("Cracked")
 
     override fun toRawJson(json: JsonObject) {
         json["name"] = profile!!.username
-        json["uuid"] = profile!!.uuid.toString()
+        if (profile!!.uuid != null) {
+            json["uuid"] = profile!!.uuid.toString()
+        }
     }
 
     override fun fromRawJson(json: JsonObject) {

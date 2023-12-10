@@ -110,7 +110,9 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
      */
     override fun toRawJson(json: JsonObject) {
         json["name"] = profile!!.username
-        json["uuid"] = profile!!.uuid.toString()
+        if (profile!!.uuid != null) {
+            json["uuid"] = profile!!.uuid.toString()
+        }
         json["refreshToken"] = refreshToken
         json["authMethod"] = AuthMethod.entries.firstOrNull { it == authMethod }?.name ?: error("Unregistered auth method")
     }

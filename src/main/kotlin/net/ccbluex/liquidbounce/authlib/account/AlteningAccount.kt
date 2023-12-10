@@ -75,7 +75,9 @@ class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening"
      */
     override fun toRawJson(json: JsonObject) {
         json["name"] = profile!!.username
-        json["uuid"] = profile!!.uuid.toString()
+        if (profile!!.uuid != null) {
+            json["uuid"] = profile!!.uuid.toString()
+        }
         json["token"] = accessToken
         json["hypixelLevel"] = hypixelLevel
         json["hypixelRank"] = hypixelRank
