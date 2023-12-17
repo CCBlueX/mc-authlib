@@ -2,12 +2,14 @@ package net.ccbluex.liquidbounce.authlib.account
 
 import com.google.gson.JsonObject
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
+import net.ccbluex.liquidbounce.authlib.bantracker.BanTracker
 import net.ccbluex.liquidbounce.authlib.compat.GameProfile
 import net.ccbluex.liquidbounce.authlib.compat.Session
 
 abstract class MinecraftAccount(val type: String) {
 
     var profile: GameProfile? = null
+    var banTracker = BanTracker()
 
     /**
      * Refreshes the Minecraft account by authenticating the user and updating the access token and profile.
