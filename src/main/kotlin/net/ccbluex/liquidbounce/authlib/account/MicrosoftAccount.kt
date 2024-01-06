@@ -43,7 +43,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
         )
 
         if (code != 200) {
-            error("Failed to get Microsoft access token")
+            msError(response)
         }
 
         val msRefreshJson = JsonParser.parseString(response).asJsonObject
@@ -57,7 +57,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
             authMethod.rpsTicketRule.replace("<access_token>", msAccessToken)), jsonPostHeader)
 
         if (xblCode != 200) {
-            error("Failed to get Microsoft XBL token")
+            msError(xblText)
         }
 
         val xblJson = JsonParser.parseString(xblText).asJsonObject
@@ -70,7 +70,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
             XBOX_XSTS_DATA.replace("<xbl_token>", xblToken), jsonPostHeader)
 
         if (xstsCode != 200) {
-            error("Failed to get Microsoft XSTS token")
+            msError(xstsText)
         }
 
         val xstsJson = JsonParser.parseString(xstsText).asJsonObject
@@ -92,7 +92,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
         val (mcProfileCode, mcProfileText) = HttpUtils.get(MC_PROFILE_URL, mapOf("Authorization" to "Bearer $accessToken"))
 
         if (mcProfileCode != 200) {
-            error("Failed to get Minecraft profile")
+            error("Failed to get Minecraft profile (Not purchased?)")
         }
 
         val mcProfileJson = JsonParser.parseString(mcProfileText).asJsonObject
