@@ -3,65 +3,107 @@ package net.ccbluex.liquidbounce.authlib.test
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.authlib.account.AlteningAccount
 import net.ccbluex.liquidbounce.authlib.account.MicrosoftAccount
+import net.ccbluex.liquidbounce.authlib.account.SessionAccount
+import net.ccbluex.liquidbounce.authlib.bantracker.Ban
 import net.ccbluex.liquidbounce.authlib.manage.AccountSerializer
 import net.ccbluex.liquidbounce.authlib.utils.set
 import net.ccbluex.liquidbounce.authlib.utils.toJsonString
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
-fun main(args: Array<String>) {
-    testCracked()
-    testAltening()
-    testMicrosoftBrowser(MicrosoftAccount.AuthMethod.AZURE_APP)
-}
+class AuthLibTests {
 
-private fun testCracked() {
-    val name = "1zun4"
+    @Test
+    fun testBans() {
+        val crackedAccount = AccountSerializer.accountInstance("1zun4")
+        crackedAccount.refresh()
 
-    println("--- Cracked Account Dynamic ---")
-    var crackedAccount = AccountSerializer.accountInstance(name)
-    crackedAccount.refresh()
-    println(crackedAccount.login())
-    println(AccountSerializer.toJson(crackedAccount).toJsonString())
+        crackedAccount.trackBan(Ban("hypixel.net", "You are banned!", -1))
+        crackedAccount.trackBan(Ban("mineplex.com", "You are banned!", 0))
 
-    println("--- Cracked Account Static ---")
-    crackedAccount = AccountSerializer.fromJson(JsonObject().also {
-        it["type"] = "net.ccbluex.liquidbounce.authlib.account.types.CrackedAccount"
-        it["name"] = name
-    })
-    crackedAccount.refresh()
-    println(crackedAccount.login())
-    println(AccountSerializer.toJson(crackedAccount).toJsonString())
-}
+        val json = AccountSerializer.toJson(crackedAccount)
+        println(json.toJsonString(prettyPrint = true))
 
-fun testMicrosoftBrowser(authMethod: MicrosoftAccount.AuthMethod) {
-    val microsoftAccount = MicrosoftAccount.buildFromOpenBrowser(object : MicrosoftAccount.OAuthHandler {
-        override fun openUrl(url: String) {
-            println("Open url: $url")
-        }
+        val account = AccountSerializer.fromJson(json)
+        println(account.bans)
 
-        override fun authResult(account: MicrosoftAccount) {
-            println("Auth result: ${account.login()}")
-            println(AccountSerializer.toJson(account).toJsonString(prettyPrint = true))
-        }
+        assertEquals(account.bans.size, 2)
+    }
 
-        override fun authError(error: String) {
-            println("Auth error: $error")
-        }
-    }, authMethod)
-}
+    @Test
+    fun testCracked() {
+        val name = "1zun4"
 
-private fun testAltening() {
-    val apiToken = ""
-    val accountToken = ""
+        println("--- Cracked Account Dynamic ---")
+        var crackedAccount = AccountSerializer.accountInstance(name)
+        crackedAccount.refresh()
+        println(crackedAccount.login())
 
-    println("--- Altening Account Token ---")
+        println(AccountSerializer.toJson(crackedAccount).toJsonString())
 
-    val alteningAccount2 = AlteningAccount.fromToken(accountToken)
-    println(alteningAccount2.login())
-    println(AccountSerializer.toJson(alteningAccount2).toJsonString())
+        println("--- Cracked Account Static ---")
+        crackedAccount = AccountSerializer.fromJson(JsonObject().also {
+            it["type"] = "net.ccbluex.liquidbounce.authlib.account.types.CrackedAccount"
+            it["name"] = name
+        })
+        crackedAccount.refresh()
 
-    println("--- Altening Account API ---")
-    val alteningAccount = AlteningAccount.generateAccount(apiToken)
-    println(alteningAccount.login())
-    println(AccountSerializer.toJson(alteningAccount).toJsonString())
+        val (session, _) = crackedAccount.login()
+        println(session)
+        println(AccountSerializer.toJson(crackedAccount).toJsonString())
+
+        assertTrue(true)
+    }
+
+    @Test
+    fun testMicrosoftBrowser() {
+        MicrosoftAccount.buildFromOpenBrowser(object : MicrosoftAccount.OAuthHandler {
+            override fun openUrl(url: String) {
+                println("Open url: $url")
+            }
+
+            override fun authResult(account: MicrosoftAccount) {
+                println("Auth result: ${account.login()}")
+                println(AccountSerializer.toJson(account).toJsonString(prettyPrint = true))
+            }
+
+            override fun authError(error: String) {
+                println("Auth error: $error")
+            }
+        }, MicrosoftAccount.AuthMethod.AZURE_APP)
+
+        assertTrue(true)
+    }
+
+    @Test
+    fun testAltening() {
+        val apiToken = ""
+        val accountToken = ""
+
+        println("--- Altening Account Token ---")
+
+        val alteningAccount2 = AlteningAccount.fromToken(accountToken)
+        println(alteningAccount2.login())
+        println(AccountSerializer.toJson(alteningAccount2).toJsonString())
+
+        println("--- Altening Account API ---")
+        val alteningAccount = AlteningAccount.generateAccount(apiToken)
+        println(alteningAccount.login())
+        println(AccountSerializer.toJson(alteningAccount).toJsonString())
+
+        assertTrue(true)
+    }
+
+    @Test
+    fun testSession() {
+        val sessionToken = ""
+
+        val sessionAccount = SessionAccount.fromToken(sessionToken)
+        println(sessionAccount.login())
+        println(AccountSerializer.toJson(sessionAccount).toJsonString())
+
+        assertTrue(true)
+    }
 
 }

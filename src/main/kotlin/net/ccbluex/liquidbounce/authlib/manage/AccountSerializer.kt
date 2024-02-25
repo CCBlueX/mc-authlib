@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.authlib.account.CrackedAccount
 import net.ccbluex.liquidbounce.authlib.account.MicrosoftAccount
 import net.ccbluex.liquidbounce.authlib.account.MinecraftAccount
-import net.ccbluex.liquidbounce.authlib.bantracker.BanTracker
 import net.ccbluex.liquidbounce.authlib.utils.set
 import net.ccbluex.liquidbounce.authlib.utils.string
 
@@ -20,8 +19,9 @@ object AccountSerializer {
     fun toJson(account: MinecraftAccount): JsonObject {
         val json = JsonObject()
         account.toRawJson(json)
-        json["bantracker"] = Gson().toJsonTree(account.banTracker)
         json["type"] = account.javaClass.simpleName
+        json["favorite"] = account.favorite
+        json["bans"] = Gson().toJsonTree(account.bans)
         return json
     }
 
@@ -38,8 +38,12 @@ object AccountSerializer {
         val account = Class.forName(typePath).getDeclaredConstructor().newInstance() as MinecraftAccount
         account.fromRawJson(json)
 
-        if (json.has("bantracker")) {
-            account.banTracker = Gson().fromJson(json["bantracker"], BanTracker::class.java)
+        if (json.has("bans")) {
+            account.bans = Gson().fromJson(json["bans"], account.bans.javaClass)
+        }
+
+        if (json.has("favorite")) {
+            account.favorite = json["favorite"].asBoolean
         }
 
         return account
