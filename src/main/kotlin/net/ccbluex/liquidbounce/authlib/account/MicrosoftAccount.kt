@@ -18,7 +18,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
     private var authMethod = AuthMethod.MICROSOFT
 
     override fun login(): Pair<Session, YggdrasilAuthenticationService> {
-        if (profile == null || accessToken.isEmpty()) {
+        if (profile?.uuid == null || accessToken.isEmpty()) {
             refresh()
         }
 
@@ -43,7 +43,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
         )
 
         if (code != 200) {
-            error("Failed to get Microsoft access token")
+            msError(response)
         }
 
         val msRefreshJson = JsonParser.parseString(response).asJsonObject
@@ -57,7 +57,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
             authMethod.rpsTicketRule.replace("<access_token>", msAccessToken)), jsonPostHeader)
 
         if (xblCode != 200) {
-            error("Failed to get Microsoft XBL token")
+            msError(xblText)
         }
 
         val xblJson = JsonParser.parseString(xblText).asJsonObject
@@ -66,10 +66,11 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
             ?: error("Microsoft XBL userhash is null")
 
         // authenticate with XSTS
-        val (xstsCode, xstsText) = HttpUtils.post(XBOX_XSTS_URL, XBOX_XSTS_DATA.replace("<xbl_token>", xblToken), jsonPostHeader)
+        val (xstsCode, xstsText) = HttpUtils.post(XBOX_XSTS_URL,
+            XBOX_XSTS_DATA.replace("<xbl_token>", xblToken), jsonPostHeader)
 
         if (xstsCode != 200) {
-            error("Failed to get Microsoft XSTS token")
+            msError(xstsText)
         }
 
         val xstsJson = JsonParser.parseString(xstsText).asJsonObject
@@ -91,7 +92,7 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
         val (mcProfileCode, mcProfileText) = HttpUtils.get(MC_PROFILE_URL, mapOf("Authorization" to "Bearer $accessToken"))
 
         if (mcProfileCode != 200) {
-            error("Failed to get Minecraft profile")
+            error("Failed to get Minecraft profile (Not purchased?)")
         }
 
         val mcProfileJson = JsonParser.parseString(mcProfileText).asJsonObject
@@ -109,7 +110,9 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
      */
     override fun toRawJson(json: JsonObject) {
         json["name"] = profile!!.username
-        json["uuid"] = profile!!.uuid.toString()
+        if (profile!!.uuid != null) {
+            json["uuid"] = profile!!.uuid.toString()
+        }
         json["refreshToken"] = refreshToken
         json["authMethod"] = AuthMethod.entries.firstOrNull { it == authMethod }?.name ?: error("Unregistered auth method")
     }
@@ -121,10 +124,8 @@ class MicrosoftAccount : MinecraftAccount("Microsoft") {
      */
     override fun fromRawJson(json: JsonObject) {
         val name = json.string("name")!!
-        val uuid = runCatching {
-            UUID.fromString(json.string("uuid")!!)
-        }.getOrElse { MojangApi.getUuid(name) }
-        profile = GameProfile(name, uuid!!)
+        val uuid = if (json.has("uuid")) parseUuid(json.string("uuid")!!) else null
+        profile = GameProfile(name, uuid)
         refreshToken = json.string("refreshToken")!!
         authMethod = AuthMethod.valueOf(json.string("authMethod")  ?: error("No auth method in json"))
     }

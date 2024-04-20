@@ -3,19 +3,14 @@ package net.ccbluex.liquidbounce.authlib.account
 import com.google.gson.JsonObject
 import com.mojang.authlib.Environment
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
-import com.thealtening.api.TheAltening
-import com.thealtening.api.TheAlteningException
 import net.ccbluex.liquidbounce.authlib.compat.GameProfile
 import net.ccbluex.liquidbounce.authlib.compat.Session
+import net.ccbluex.liquidbounce.authlib.easymc.EasyMCAPI
 import net.ccbluex.liquidbounce.authlib.utils.*
-import net.ccbluex.liquidbounce.authlib.yggdrasil.YggdrasilUserAuthentication
 import java.net.Proxy
 import java.util.*
-import kotlin.jvm.Throws
 
-const val ALTENING_AUTH = "http://authserver.thealtening.com"
-const val ALTENING_SESSION = "http://sessionserver.thealtening.com"
-val alteningEnvironment = Environment(ALTENING_SESSION, "https://api.minecraftservices.com", "PROD")
+val easyMcEnvironment = Environment("https://sessionserver.easymc.io", "https://api.minecraftservices.com", "PROD")
 
 /**
  * Represents an Altening account from the TheAltening Account Generator
@@ -23,7 +18,7 @@ val alteningEnvironment = Environment(ALTENING_SESSION, "https://api.minecraftse
  * @constructor Creates an AlteningAccount object with the specified type.
  * @param type The type of the account.
  */
-class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening") {
+class EasyMCAccount(val accountToken: String) : MinecraftAccount("EasyMC") {
 
     /**
      * Used for JSON deserialize.
@@ -37,23 +32,8 @@ class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening"
     var accessToken = ""
         private set
 
-    /**
-     * Represents the level of a player on the Hypixel server.
-     *
-     * @property hypixelLevel The current level of the player on Hypixel.
-     */
-    var hypixelLevel: Int = 0
-        private set
-
-    /**
-     * Represents the rank of a player on the Hypixel server.
-     * @property hypixelRank The rank of the player on Hypixel.
-     */
-    var hypixelRank: String = ""
-        private set
-
-    private val sessionService = YggdrasilAuthenticationService(Proxy.NO_PROXY, alteningEnvironment)
-    private val userAuthentication = YggdrasilUserAuthentication(ALTENING_AUTH)
+    private val sessionService = YggdrasilAuthenticationService(Proxy.NO_PROXY, easyMcEnvironment)
+    private val easyMCApi = EasyMCAPI()
 
     /**
      * load the account data from json
@@ -63,10 +43,7 @@ class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening"
         val name = json.string("name")!!
         val uuid = if (json.has("uuid")) parseUuid(json.string("uuid")!!) else null
         profile = GameProfile(name, uuid!!)
-
         accessToken = json.string("token")!!
-        hypixelLevel = json.int("hypixelLevel")!!
-        hypixelRank = json.string("hypixelRank")!!
     }
 
     /**
@@ -79,12 +56,16 @@ class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening"
             json["uuid"] = profile!!.uuid.toString()
         }
         json["token"] = accessToken
-        json["hypixelLevel"] = hypixelLevel
-        json["hypixelRank"] = hypixelRank
     }
 
     override fun refresh() {
-        val session = userAuthentication.authenticate(accountToken, "LiquidBounce")
+        if (profile != null) {
+            // Already redeemed
+            return
+        }
+
+        val session = easyMCApi.redeem(accountToken)
+
         accessToken = session.token
         profile = GameProfile(session.username, session.uuid)
     }
@@ -100,17 +81,8 @@ class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening"
 
     companion object {
 
-        fun fromToken(accountToken: String): AlteningAccount {
-            val account = AlteningAccount(accountToken)
-            account.refresh()
-            return account
-        }
-
-        @Throws(TheAlteningException::class)
-        fun generateAccount(apiToken: String): AlteningAccount {
-            val alteningAccount = TheAltening.newBasicRetriever(apiToken).account
-
-            val account = AlteningAccount(alteningAccount.token)
+        fun fromToken(accountToken: String): EasyMCAccount {
+            val account = EasyMCAccount(accountToken)
             account.refresh()
             return account
         }

@@ -13,9 +13,9 @@ import java.net.Proxy
 import java.util.*
 
 /**
- * A minecraft cracked account - has no password and no access to premium online servers
+ * A minecraft session account - premium account without credentials.
  */
-class CrackedAccount(private val username: String) : MinecraftAccount("Cracked") {
+class SessionAccount(private val session: String) : MinecraftAccount("Cracked") {
 
     /**
      * Used for JSON deserialize.
@@ -23,12 +23,16 @@ class CrackedAccount(private val username: String) : MinecraftAccount("Cracked")
     @Suppress("unused")
     constructor() : this("")
 
-    override fun refresh() {
-        val uuid = runCatching {
-            GameProfileRepository().fetchUuidByUsername(username)
-        }.getOrNull() ?: UUID.randomUUID()
+    companion object {
+        fun fromToken(token: String): SessionAccount {
+            val account = SessionAccount(token)
+            account.refresh()
+            return account
+        }
+    }
 
-        profile = GameProfile(username, uuid)
+    override fun refresh() {
+        profile = GameProfileRepository().fetchBySession(session)
     }
 
     override fun login(): Pair<Session, YggdrasilAuthenticationService> {
@@ -36,7 +40,7 @@ class CrackedAccount(private val username: String) : MinecraftAccount("Cracked")
             refresh()
         }
 
-        val session = profile!!.toSession("-", "legacy")
+        val session = profile!!.toSession(session, "mojang")
         val service = YggdrasilAuthenticationService(Proxy.NO_PROXY, YggdrasilEnvironment.PROD.environment)
 
         return session to service
