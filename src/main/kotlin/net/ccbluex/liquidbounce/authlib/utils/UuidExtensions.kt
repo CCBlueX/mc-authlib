@@ -26,3 +26,14 @@ private fun uuidFromUnformatted(string: String): UUID = UUID.fromString(string.r
     "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(),
     "$1-$2-$3-$4-$5"
 ))
+
+/**
+ * Generates an offline player UUID from a player name.
+ * Minecraft does this by putting "OfflinePlayer:" in front of the player name.
+ *
+ * @param name The player name.
+ * @return The offline player UUID.
+ */
+fun generateOfflinePlayerUuid(name: String): UUID {
+    return UUID.nameUUIDFromBytes("OfflinePlayer:$name".toByteArray())
+}
