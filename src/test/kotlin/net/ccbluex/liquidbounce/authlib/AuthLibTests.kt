@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.authlib
 
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.authlib.account.AlteningAccount
-import net.ccbluex.liquidbounce.authlib.account.EasyMCAccount
 import net.ccbluex.liquidbounce.authlib.account.MicrosoftAccount
 import net.ccbluex.liquidbounce.authlib.account.SessionAccount
 import net.ccbluex.liquidbounce.authlib.bantracker.Ban
@@ -30,19 +29,6 @@ class AuthLibTests {
         println(account.bans)
 
         assertEquals(account.bans.size, 2)
-    }
-
-    @Test
-    fun testEasyMC() {
-        val token = ""
-
-        val easyMCAccount = EasyMCAccount.fromToken(token)
-        easyMCAccount.refresh()
-
-        val session = easyMCAccount.login()
-        println(session)
-
-        assertTrue(true)
     }
 
     @Test
