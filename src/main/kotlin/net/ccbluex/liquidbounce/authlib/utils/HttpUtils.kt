@@ -82,17 +82,6 @@ object HttpUtils {
         val (_, text) = post(url, Gson().toJson(data), mapOf("Content-Type" to "application/json"))
         return decode(text)
     }
-
-    inline fun <reified T: GsonDeserializable, reified E: GsonDeserializable>
-            postWithFallback(url: String, data: GsonSerializable): Pair<T?, E?> {
-        val (code, text) = post(url, Gson().toJson(data), mapOf("Content-Type" to "application/json"))
-
-        return if (code == 200) {
-            Pair(decode<T>(text), null)
-        } else {
-            Pair(null, decode<E>(text))
-        }
-    }
     
 }
 
