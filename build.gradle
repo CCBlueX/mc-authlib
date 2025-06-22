@@ -35,7 +35,6 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.22.0'
     implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.22.0'
     implementation 'org.slf4j:slf4j-api:2.0.9'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'com.mojang:authlib:6.0.52'
 
     implementation('com.thealtening.api:api:4.1.0') {
