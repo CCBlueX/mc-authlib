@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.authlib.utils
 
-import com.google.gson.Gson
 import java.io.DataOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -78,13 +77,13 @@ internal object HttpUtils {
     fun post(url: String, data: String, header: Map<String, String> = emptyMap()) =
         request(url, "POST", data, header)
 
-    inline fun <reified T: GsonDeserializable> post(url: String, data: GsonSerializable): T {
+    inline fun <reified T> post(url: String, data: Any): T {
         val (_, text) = post(url, GSON.toJson(data), mapOf("Content-Type" to "application/json"))
         return decode(text)
     }
 
-    inline fun <reified T: GsonDeserializable, reified E: GsonDeserializable>
-            postWithFallback(url: String, data: GsonSerializable): Pair<T?, E?> {
+    inline fun <reified T, reified E>
+            postWithFallback(url: String, data: Any): Pair<T?, E?> {
         val (code, text) = post(url, GSON.toJson(data), mapOf("Content-Type" to "application/json"))
 
         return if (code == 200) {
@@ -95,7 +94,3 @@ internal object HttpUtils {
     }
     
 }
-
-interface GsonSerializable
-
-interface GsonDeserializable
