@@ -3,6 +3,10 @@ package net.ccbluex.liquidbounce.authlib.utils
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 
+internal val GSON = GsonBuilder().create()
+
+internal val GSON_PRETTY = GsonBuilder().setPrettyPrinting().create()
+
 // makes gson api access much easier in Kotlin
 
 operator fun JsonObject.set(key: String, value: JsonElement) {
@@ -26,11 +30,7 @@ operator fun JsonObject.set(key: String, value: Boolean) {
 }
 
 fun JsonElement.toJsonString(prettyPrint: Boolean = false): String {
-    val gson = if(prettyPrint) {
-        GsonBuilder().setPrettyPrinting().create()
-    } else {
-        GsonBuilder().create()
-    }
+    val gson = if (prettyPrint) GSON_PRETTY else GSON
     return gson.toJson(this)
 }
 
@@ -146,4 +146,4 @@ fun JsonArray.array(index: Int): JsonArray? {
     }
 }
 
-inline fun <reified T> decode(stringJson: String): T = Gson().fromJson(stringJson, object : TypeToken<T>() {}.type)
+internal inline fun <reified T> decode(stringJson: String): T = GSON.fromJson(stringJson, object : TypeToken<T>() {}.type)

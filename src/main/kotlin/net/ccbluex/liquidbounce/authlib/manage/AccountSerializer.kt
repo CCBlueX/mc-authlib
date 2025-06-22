@@ -1,10 +1,10 @@
 package net.ccbluex.liquidbounce.authlib.manage
 
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.authlib.account.CrackedAccount
 import net.ccbluex.liquidbounce.authlib.account.MicrosoftAccount
 import net.ccbluex.liquidbounce.authlib.account.MinecraftAccount
+import net.ccbluex.liquidbounce.authlib.utils.GSON
 import net.ccbluex.liquidbounce.authlib.utils.set
 import net.ccbluex.liquidbounce.authlib.utils.string
 
@@ -21,7 +21,7 @@ object AccountSerializer {
         account.toRawJson(json)
         json["type"] = account.javaClass.simpleName
         json["favorite"] = account.favorite
-        json["bans"] = Gson().toJsonTree(account.bans)
+        json["bans"] = GSON.toJsonTree(account.bans)
         return json
     }
 
@@ -39,7 +39,7 @@ object AccountSerializer {
         account.fromRawJson(json)
 
         if (json.has("bans")) {
-            account.bans = Gson().fromJson(json["bans"], account.bans.javaClass)
+            account.bans = GSON.fromJson(json["bans"], account.bans.javaClass)
         }
 
         if (json.has("favorite")) {
