@@ -1,13 +1,21 @@
 package net.ccbluex.liquidbounce.authlib.account
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
 import net.ccbluex.liquidbounce.authlib.bantracker.Ban
 import net.ccbluex.liquidbounce.authlib.compat.GameProfile
 import net.ccbluex.liquidbounce.authlib.compat.Session
 import net.ccbluex.liquidbounce.authlib.utils.GSON
+import net.ccbluex.liquidbounce.authlib.utils.boolean
 import net.ccbluex.liquidbounce.authlib.utils.set
 import net.ccbluex.liquidbounce.authlib.utils.string
+import java.lang.reflect.Type
 import java.util.Collections
 
 sealed class MinecraftAccount(val type: String) {
@@ -17,10 +25,10 @@ sealed class MinecraftAccount(val type: String) {
     /**
      * Represents the account as favorite or not.
      */
-    var favorite = false
+    var favorite: Boolean = false
         private set
 
-    var bans = mutableMapOf<String, Ban>()
+    var bans: MutableMap<String, Ban> = hashMapOf<String, Ban>()
         internal set
 
     /**
@@ -108,24 +116,48 @@ sealed class MinecraftAccount(val type: String) {
         return bans.values.toList()
     }
 
+    object Adapter : JsonSerializer<MinecraftAccount>, JsonDeserializer<MinecraftAccount> {
+        override fun deserialize(
+            json: JsonElement?,
+            typeOfT: Type,
+            context: JsonDeserializationContext
+        ): MinecraftAccount? = (json as? JsonObject)?.runCatching(::fromJson)?.getOrNull()
+
+        override fun serialize(
+            src: MinecraftAccount?,
+            typeOfSrc: Type,
+            context: JsonSerializationContext
+        ): JsonElement? = src?.toJson()
+    }
+
     companion object {
         /**
          * Converts a JsonObject to a MinecraftAccount object.
          *
          * @param json the JsonObject containing the account data
          * @return a MinecraftAccount object
+         * @throws IllegalArgumentException if [json] is not a valid [MinecraftAccount]
          */
         @JvmStatic
         fun fromJson(json: JsonObject): MinecraftAccount {
-            val account = SERIAL_NAME_TO_TYPE[json.string("type")]!!.getDeclaredConstructor().newInstance() as MinecraftAccount
+            fun errorArg(): Nothing = throw IllegalArgumentException("'$json' is not a valid MinecraftAccount")
+
+            val type = json["type"] as? JsonPrimitive ?: errorArg()
+            val account = SERIAL_NAME_TO_TYPE[type.asString]?.getDeclaredConstructor()?.newInstance() ?: errorArg()
             account.fromRawJson(json)
 
-            if (json.has("bans")) {
-                account.bans = GSON.fromJson(json["bans"], account.bans.javaClass)
+            (json["bans"] as? JsonObject)?.let { bans ->
+                for ((key, value) in bans.entrySet()) {
+                    account.bans[key] = runCatching {
+                        GSON.fromJson(value, Ban::class.java)
+                    }.getOrNull() ?: errorArg()
+                }
             }
 
-            if (json.has("favorite") && json["favorite"].asBoolean) {
-                account.favorite()
+            runCatching {
+                if (json.has("favorite") && json["favorite"].asBoolean) {
+                    account.favorite()
+                }
             }
 
             return account
