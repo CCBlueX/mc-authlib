@@ -3,10 +3,17 @@ package net.ccbluex.liquidbounce.authlib.utils
 import java.util.*
 
 /**
- * Parses a string representation of a UUID into a UUID object.
+ * Parses a string into a UUID object.
  *
- * @param string The string representation of the UUID.
- * @return The UUID object.
+ * This function accepts both:
+ * - Standard UUID strings with dashes (e.g., "123e4567-e89b-12d3-a456-426655440000")
+ * - Compact UUID strings without dashes (32 hex digits, e.g., "123e4567e89b12d3a456426655440000")
+ *
+ * If the input is not a valid standard UUID string, it will attempt to parse it as a compact format.
+ *
+ * @param string The UUID string, with or without dashes.
+ * @return The corresponding UUID object.
+ * @throws IllegalArgumentException if the input is not a valid UUID in either format.
  */
 fun parseUuid(string: String): UUID {
     return try {
@@ -17,15 +24,22 @@ fun parseUuid(string: String): UUID {
 }
 
 /**
- * Converts an unformatted String representation of a UUID to a UUID object.
+ * Parses a UUID from a 32-character unformatted hex string (without dashes).
  *
- * @param string The unformatted String representation of the UUID.
- * @return The UUID object.
+ * Example:
+ *   Input:  "123e4567e89b12d3a456426655440000"
+ *   Output: UUID("123e4567-e89b-12d3-a456-426655440000")
+ *
+ * @param input A 32-character hexadecimal string representing a UUID (no dashes).
+ * @return The parsed UUID object.
+ * @throws IllegalArgumentException if the input is not exactly 32 hex characters.
  */
-private fun uuidFromUnformatted(string: String): UUID = UUID.fromString(string.replaceFirst(
-    "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(),
-    "$1-$2-$3-$4-$5"
-))
+private fun uuidFromUnformatted(input: String): UUID {
+    require(input.length == 32) { "UUID string must be 32 characters long without dashes" }
+    val mostSigBits = input.substring(0, 16).toULong(radix = 16).toLong()
+    val leastSigBits = input.substring(16, 32).toULong(radix = 16).toLong()
+    return UUID(mostSigBits, leastSigBits)
+}
 
 /**
  * Generates an offline player UUID from a player name.

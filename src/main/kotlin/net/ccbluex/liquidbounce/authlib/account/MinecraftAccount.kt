@@ -9,7 +9,13 @@ import net.ccbluex.liquidbounce.authlib.compat.Session
 abstract class MinecraftAccount(val type: String) {
 
     var profile: GameProfile? = null
+
+    /**
+     * Represents the account as favorite or not.
+     */
     var favorite = false
+        private set
+
     var bans = mutableMapOf<String, Ban>()
 
     /**
@@ -41,14 +47,14 @@ abstract class MinecraftAccount(val type: String) {
     /**
      * Marks the account as a favorite.
      */
-    fun favorite() {
+    fun favorite() = apply {
         favorite = true
     }
 
     /**
      * Marks the account as not a favorite.
      */
-    fun unfavorite() {
+    fun unfavorite() = apply {
         favorite = false
     }
 

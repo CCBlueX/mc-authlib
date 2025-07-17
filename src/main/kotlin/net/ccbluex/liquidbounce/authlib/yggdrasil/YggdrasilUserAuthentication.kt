@@ -2,8 +2,6 @@ package net.ccbluex.liquidbounce.authlib.yggdrasil
 
 import com.google.gson.annotations.SerializedName
 import net.ccbluex.liquidbounce.authlib.compat.Session
-import net.ccbluex.liquidbounce.authlib.utils.GsonDeserializable
-import net.ccbluex.liquidbounce.authlib.utils.GsonSerializable
 import net.ccbluex.liquidbounce.authlib.utils.HttpUtils
 import net.ccbluex.liquidbounce.authlib.utils.parseUuid
 import java.util.*
@@ -16,7 +14,21 @@ val clientIdentifier: String = UUID.randomUUID().toString()
  *
  * Documentation: https://wiki.vg/Authentication
  */
-class YggdrasilUserAuthentication(val authServer: String = "https://authserver.mojang.com") {
+class YggdrasilUserAuthentication(val baseUrl: String) {
+
+    @Deprecated(
+        message = "Use Default singleton instead",
+        replaceWith = ReplaceWith("YggdrasilUserAuthentication.Default"),
+        level = DeprecationLevel.WARNING
+    )
+    constructor() : this(DEFAULT_BASE_URL)
+
+    companion object {
+        const val DEFAULT_BASE_URL = "https://authserver.mojang.com"
+
+        @JvmField
+        val Default = YggdrasilUserAuthentication(DEFAULT_BASE_URL)
+    }
 
     enum class Agent(
         @SerializedName("name")
@@ -33,7 +45,7 @@ class YggdrasilUserAuthentication(val authServer: String = "https://authserver.m
         val password: String,
         val clientToken: String = clientIdentifier,
         val requestUser: Boolean = true
-    ) : GsonSerializable
+    )
 
     class AuthenticationResponse(
         val accessToken: String,
@@ -45,7 +57,7 @@ class YggdrasilUserAuthentication(val authServer: String = "https://authserver.m
          * and the availableProfiles array will be empty.
          */
         val selectedProfile: Profile?
-    ) : GsonDeserializable {
+    ) {
         class Profile(
             val id: String,
             val name: String
@@ -62,7 +74,7 @@ class YggdrasilUserAuthentication(val authServer: String = "https://authserver.m
         }
 
         val request = AuthenticationRequest(Agent.MINECRAFT, username, password)
-        val response = HttpUtils.post<AuthenticationResponse>("$authServer/authenticate", request)
+        val response = HttpUtils.post<AuthenticationResponse>("$baseUrl/authenticate", request)
 
         if (response.clientToken != clientIdentifier) {
             error("Client identifier mismatch")

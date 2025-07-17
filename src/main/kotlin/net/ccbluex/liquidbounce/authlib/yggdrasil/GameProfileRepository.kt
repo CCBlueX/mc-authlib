@@ -7,7 +7,21 @@ import net.ccbluex.liquidbounce.authlib.utils.decode
 import net.ccbluex.liquidbounce.authlib.utils.parseUuid
 import java.util.*
 
-class GameProfileRepository(val servicesHost: String = "https://api.minecraftservices.com") {
+class GameProfileRepository(val baseUrl: String) {
+
+    @Deprecated(
+        message = "Use Default singleton instead",
+        replaceWith = ReplaceWith("GameProfileRepository.Default"),
+        level = DeprecationLevel.WARNING
+    )
+    constructor() : this(DEFAULT_BASE_URL)
+
+    companion object {
+        const val DEFAULT_BASE_URL = "https://api.minecraftservices.com"
+
+        @JvmField
+        val Default = GameProfileRepository(DEFAULT_BASE_URL)
+    }
 
     /**
      * Requests the Uuid of a username from the Mojang API
@@ -16,7 +30,7 @@ class GameProfileRepository(val servicesHost: String = "https://api.minecraftser
      * uses a different API endpoint for bulk requests and is therefore not suitable for this use case.
      */
     fun fetchUuidByUsername(username: String): UUID? = runCatching {
-        val (code, text) = HttpUtils.get("$servicesHost/users/profiles/minecraft/$username")
+        val (code, text) = HttpUtils.get("$baseUrl/users/profiles/minecraft/$username")
 
         if (code != 200) {
             error("Failed to get UUID of $username")
@@ -32,7 +46,7 @@ class GameProfileRepository(val servicesHost: String = "https://api.minecraftser
      * Fetch profile by session token
      */
     fun fetchBySession(token: String): GameProfile {
-        val (code, text) = HttpUtils.get("$servicesHost/minecraft/profile", header =
+        val (code, text) = HttpUtils.get("$baseUrl/minecraft/profile", header =
             mapOf("Authorization" to "Bearer $token")
         )
 

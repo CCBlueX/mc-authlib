@@ -41,8 +41,7 @@ dependencies {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
 }
 
 publishing {

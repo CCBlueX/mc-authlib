@@ -21,7 +21,7 @@ internal object HttpUtils {
      * @param agent User agent to use
      * @return The created HTTP connection
      */
-    fun make(url: String, method: String, data: String = "", header: Map<String, String> = emptyMap(), agent: String = DEFAULT_AGENT): HttpURLConnection {
+    private fun make(url: String, method: String, data: String = "", header: Map<String, String> = emptyMap(), agent: String = DEFAULT_AGENT): HttpURLConnection {
         val httpConnection = URL(url).openConnection() as HttpURLConnection
 
         httpConnection.requestMethod = method

@@ -42,8 +42,8 @@ object AccountSerializer {
             account.bans = GSON.fromJson(json["bans"], account.bans.javaClass)
         }
 
-        if (json.has("favorite")) {
-            account.favorite = json["favorite"].asBoolean
+        if (json.has("favorite") && json["favorite"].asBoolean) {
+            account.favorite()
         }
 
         return account
