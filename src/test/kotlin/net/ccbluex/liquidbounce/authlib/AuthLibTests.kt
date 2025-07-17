@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.authlib.account.AlteningAccount
 import net.ccbluex.liquidbounce.authlib.account.EasyMCAccount
 import net.ccbluex.liquidbounce.authlib.account.MicrosoftAccount
+import net.ccbluex.liquidbounce.authlib.account.MinecraftAccount
 import net.ccbluex.liquidbounce.authlib.account.SessionAccount
 import net.ccbluex.liquidbounce.authlib.bantracker.Ban
 import net.ccbluex.liquidbounce.authlib.manage.AccountSerializer
@@ -17,16 +18,16 @@ class AuthLibTests {
 
     @Test
     fun testBans() {
-        val crackedAccount = AccountSerializer.accountInstance("1zun4")
+        val crackedAccount = MinecraftAccount.fromName("1zun4")
         crackedAccount.refresh()
 
         crackedAccount.trackBan(Ban("hypixel.net", "You are banned!", -1))
         crackedAccount.trackBan(Ban("mineplex.com", "You are banned!", 0))
 
-        val json = AccountSerializer.toJson(crackedAccount)
+        val json = crackedAccount.toJson()
         println(json.toJsonString(prettyPrint = true))
 
-        val account = AccountSerializer.fromJson(json)
+        val account = MinecraftAccount.fromJson(json)
         println(account.bans)
 
         assertEquals(account.bans.size, 2)
@@ -50,22 +51,22 @@ class AuthLibTests {
         val name = "1zun4"
 
         println("--- Cracked Account Dynamic ---")
-        var crackedAccount = AccountSerializer.accountInstance(name)
+        var crackedAccount = MinecraftAccount.fromName(name)
         crackedAccount.refresh()
         println(crackedAccount.login())
 
-        println(AccountSerializer.toJson(crackedAccount).toJsonString())
+        println(crackedAccount.toJson().toJsonString())
 
         println("--- Cracked Account Static ---")
-        crackedAccount = AccountSerializer.fromJson(JsonObject().also {
-            it["type"] = "net.ccbluex.liquidbounce.authlib.account.types.CrackedAccount"
-            it["name"] = name
-        })
+        crackedAccount = MinecraftAccount.fromJson(JsonObject().also {
+                    it["type"] = "net.ccbluex.liquidbounce.authlib.account.types.CrackedAccount"
+                    it["name"] = name
+                })
         crackedAccount.refresh()
 
         val (session, _) = crackedAccount.login()
         println(session)
-        println(AccountSerializer.toJson(crackedAccount).toJsonString())
+        println(crackedAccount.toJson().toJsonString())
 
         assertTrue(true)
     }
@@ -79,7 +80,7 @@ class AuthLibTests {
 
             override fun authResult(account: MicrosoftAccount) {
                 println("Auth result: ${account.login()}")
-                println(AccountSerializer.toJson(account).toJsonString(prettyPrint = true))
+                println(account.toJson().toJsonString(prettyPrint = true))
             }
 
             override fun authError(error: String) {
@@ -99,12 +100,12 @@ class AuthLibTests {
 
         val alteningAccount2 = AlteningAccount.fromToken(accountToken)
         println(alteningAccount2.login())
-        println(AccountSerializer.toJson(alteningAccount2).toJsonString())
+        println(alteningAccount2.toJson().toJsonString())
 
         println("--- Altening Account API ---")
         val alteningAccount = AlteningAccount.generateAccount(apiToken)
         println(alteningAccount.login())
-        println(AccountSerializer.toJson(alteningAccount).toJsonString())
+        println(alteningAccount.toJson().toJsonString())
 
         assertTrue(true)
     }
@@ -115,7 +116,7 @@ class AuthLibTests {
 
         val sessionAccount = SessionAccount.fromToken(sessionToken)
         println(sessionAccount.login())
-        println(AccountSerializer.toJson(sessionAccount).toJsonString())
+        println(sessionAccount.toJson().toJsonString())
 
         assertTrue(true)
     }
