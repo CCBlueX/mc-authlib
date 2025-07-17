@@ -27,9 +27,7 @@ class EasyMCAPI(val server: String = "https://api.easymc.io/v1") {
     ) : GsonDeserializable
 
     fun redeem(token: String): Session {
-        if (token.isBlank()) {
-            error("Token cannot be blank")
-        }
+        require(token.isNotBlank()) { "Token must not be blank" }
 
         val request = RedeemRequest(token)
         val (response, error) =

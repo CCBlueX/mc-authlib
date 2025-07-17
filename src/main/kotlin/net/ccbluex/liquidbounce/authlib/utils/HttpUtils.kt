@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.authlib.utils
 
-import com.google.gson.Gson
 import java.io.DataOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -8,7 +7,7 @@ import java.net.URL
 /**
  * A utility class for making HTTP requests.
  */
-object HttpUtils {
+internal object HttpUtils {
 
     private const val DEFAULT_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36"
 
@@ -78,14 +77,14 @@ object HttpUtils {
     fun post(url: String, data: String, header: Map<String, String> = emptyMap()) =
         request(url, "POST", data, header)
 
-    inline fun <reified T: GsonDeserializable> post(url: String, data: GsonSerializable): T {
-        val (_, text) = post(url, Gson().toJson(data), mapOf("Content-Type" to "application/json"))
+    inline fun <reified T> post(url: String, data: Any): T {
+        val (_, text) = post(url, GSON.toJson(data), mapOf("Content-Type" to "application/json"))
         return decode(text)
     }
 
-    inline fun <reified T: GsonDeserializable, reified E: GsonDeserializable>
-            postWithFallback(url: String, data: GsonSerializable): Pair<T?, E?> {
-        val (code, text) = post(url, Gson().toJson(data), mapOf("Content-Type" to "application/json"))
+    inline fun <reified T, reified E>
+            postWithFallback(url: String, data: Any): Pair<T?, E?> {
+        val (code, text) = post(url, GSON.toJson(data), mapOf("Content-Type" to "application/json"))
 
         return if (code == 200) {
             Pair(decode<T>(text), null)
@@ -95,7 +94,3 @@ object HttpUtils {
     }
     
 }
-
-interface GsonSerializable
-
-interface GsonDeserializable

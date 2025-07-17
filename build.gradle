@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.jvm.JvmTargetValidationMode
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.9.21"
+    id "org.jetbrains.kotlin.jvm" version "2.0.0"
     id 'java'
     id 'org.jetbrains.dokka' version '1.9.10'
     id 'maven-publish'
@@ -30,13 +30,11 @@ repositories {
 dependencies {
     dokkaHtmlPlugin 'org.jetbrains.dokka:kotlin-as-java-plugin:1.6.10'
 
-	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.21'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.apache.logging.log4j:log4j-core:2.22.0'
     implementation 'org.apache.logging.log4j:log4j-api:2.22.0'
     implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.22.0'
     implementation 'org.slf4j:slf4j-api:2.0.9'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'com.mojang:authlib:6.0.52'
 
     implementation('com.thealtening.api:api:4.1.0') {
