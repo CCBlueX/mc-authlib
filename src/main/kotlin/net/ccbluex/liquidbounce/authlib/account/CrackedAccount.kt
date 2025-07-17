@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.authlib.utils.parseUuid
 import net.ccbluex.liquidbounce.authlib.utils.set
 import net.ccbluex.liquidbounce.authlib.utils.string
 import java.net.Proxy
-import java.util.*
 
 /**
  * A minecraft cracked account - has no password and no access to premium online servers
@@ -28,7 +27,7 @@ class CrackedAccount(private val username: String, private var online: Boolean =
     override fun refresh() {
         val uuid = if (online) {
             runCatching {
-                GameProfileRepository().fetchUuidByUsername(username)
+                GameProfileRepository.Default.fetchUuidByUsername(username)
             }.getOrNull()
         } else { null } ?: generateOfflinePlayerUuid(username)
 

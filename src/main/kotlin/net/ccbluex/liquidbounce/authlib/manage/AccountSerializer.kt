@@ -19,7 +19,7 @@ object AccountSerializer {
     fun toJson(account: MinecraftAccount): JsonObject {
         val json = JsonObject()
         account.toRawJson(json)
-        json["type"] = account.javaClass.simpleName
+        json["type"] = MinecraftAccount.TYPE_TO_SERIAL_NAME[account.javaClass]!!
         json["favorite"] = account.favorite
         json["bans"] = GSON.toJsonTree(account.bans)
         return json
@@ -32,10 +32,7 @@ object AccountSerializer {
      * @return a MinecraftAccount object
      */
     fun fromJson(json: JsonObject): MinecraftAccount {
-        val typeClass = json.string("type")!!.substringAfterLast(".")
-        val typePath = "net.ccbluex.liquidbounce.authlib.account.$typeClass"
-
-        val account = Class.forName(typePath).getDeclaredConstructor().newInstance() as MinecraftAccount
+        val account = MinecraftAccount.SERIAL_NAME_TO_TYPE[json.string("type")]!!.getDeclaredConstructor().newInstance() as MinecraftAccount
         account.fromRawJson(json)
 
         if (json.has("bans")) {

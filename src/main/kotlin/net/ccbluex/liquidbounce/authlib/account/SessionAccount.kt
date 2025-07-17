@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.authlib.utils.parseUuid
 import net.ccbluex.liquidbounce.authlib.utils.set
 import net.ccbluex.liquidbounce.authlib.utils.string
 import java.net.Proxy
-import java.util.*
 
 /**
  * A minecraft session account - premium account without credentials.
@@ -32,7 +31,7 @@ class SessionAccount(private val session: String) : MinecraftAccount("Cracked") 
     }
 
     override fun refresh() {
-        profile = GameProfileRepository().fetchBySession(session)
+        profile = GameProfileRepository.Default.fetchBySession(session)
     }
 
     override fun login(): Pair<Session, YggdrasilAuthenticationService> {

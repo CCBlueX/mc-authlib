@@ -5,6 +5,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
 import net.ccbluex.liquidbounce.authlib.bantracker.Ban
 import net.ccbluex.liquidbounce.authlib.compat.GameProfile
 import net.ccbluex.liquidbounce.authlib.compat.Session
+import java.util.Collections
 
 abstract class MinecraftAccount(val type: String) {
 
@@ -87,6 +88,30 @@ abstract class MinecraftAccount(val type: String) {
         // Remove expired bans
         bans.values.removeIf { it.bannedUntil != -1L && it.bannedUntil < System.currentTimeMillis() }
         return bans.values.toList()
+    }
+
+    companion object {
+        @JvmField
+        val SERIAL_NAME_TO_TYPE: Map<String, Class<out MinecraftAccount>> = Collections.unmodifiableMap(
+            hashMapOf(
+                "AlteningAccount" to AlteningAccount::class.java,
+                "CrackedAccount" to CrackedAccount::class.java,
+                "EasyMCAccount" to EasyMCAccount::class.java,
+                "MicrosoftAccount" to MicrosoftAccount::class.java,
+                "SessionAccount" to SessionAccount::class.java,
+            )
+        )
+
+        @JvmField
+        val TYPE_TO_SERIAL_NAME: Map<Class<out MinecraftAccount>, String> = Collections.unmodifiableMap(
+            hashMapOf(
+                AlteningAccount::class.java to "AlteningAccount",
+                CrackedAccount::class.java to "CrackedAccount",
+                EasyMCAccount::class.java to "EasyMCAccount",
+                MicrosoftAccount::class.java to "MicrosoftAccount",
+                SessionAccount::class.java to "SessionAccount",
+            )
+        )
     }
 
 }
