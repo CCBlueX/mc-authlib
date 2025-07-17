@@ -32,9 +32,11 @@ class OAuthServer(
                 it.split("=", limit = 2)
             }.associate { it[0] to it[1] }
 
-            if (query.containsKey("code")) {
+            val code = query["code"]
+
+            if (code != null) {
                 try {
-                    handler.authResult(MicrosoftAccount.buildFromAuthCode(query["code"]!!, authMethod))
+                    handler.authResult(MicrosoftAccount.buildFromAuthCode(code, authMethod))
                     exchange.response(200, "Login Success")
                 } catch (e: FileNotFoundException) {
                     val errorMessage =
