@@ -16,7 +16,6 @@ Based on [Elixir](https://github.com/UnlegitMC/Elixir) - a discontinued project 
 ## Supported account types
 - Microsoft (Premium via Xbox Sign In)
 - Altening (Premium provider)
-- EasyMC (Premium provider)
 - Cracked (Username)
 - Session (Session Token)
 
@@ -56,19 +55,6 @@ fun loginUsingMicrosoft() {
         }
     }, MicrosoftAccount.AuthMethod.AZURE_APP)
 }
-```
-
-```kotlin
-fun loginUsingEasyMC() {
-    val token = "_________"
-    
-    // Warning: Blocking Request to EasyMC API
-    val easyMCAccount = EasyMCAccount.fromToken(token)
-    
-    println(easyMCAccount.login())
-    println(AccountSerializer.toJson(easyMCAccount).toJsonString())
-}
-
 ```
 
 ```kotlin
