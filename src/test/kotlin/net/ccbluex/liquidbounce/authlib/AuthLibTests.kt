@@ -45,9 +45,9 @@ class AuthLibTests {
 
         println("--- Cracked Account Static ---")
         crackedAccount = MinecraftAccount.fromJson(JsonObject().also {
-                    it["type"] = "net.ccbluex.liquidbounce.authlib.account.types.CrackedAccount"
-                    it["name"] = name
-                })
+            it["type"] = "CrackedAccount"
+            it["name"] = name
+        })
         crackedAccount.refresh()
 
         val (session, _) = crackedAccount.login()
@@ -77,34 +77,34 @@ class AuthLibTests {
         assertTrue(true)
     }
 
-    @Test
-    fun testAltening() {
-        val apiToken = ""
-        val accountToken = ""
+//    @Test
+//    fun testAltening() {
+//        val apiToken = ""
+//        val accountToken = ""
+//
+//        println("--- Altening Account Token ---")
+//
+//        val alteningAccount2 = AlteningAccount.fromToken(accountToken)
+//        println(alteningAccount2.login())
+//        println(alteningAccount2.toJson().toJsonString())
+//
+//        println("--- Altening Account API ---")
+//        val alteningAccount = AlteningAccount.generateAccount(apiToken)
+//        println(alteningAccount.login())
+//        println(alteningAccount.toJson().toJsonString())
+//
+//        assertTrue(true)
+//    }
 
-        println("--- Altening Account Token ---")
-
-        val alteningAccount2 = AlteningAccount.fromToken(accountToken)
-        println(alteningAccount2.login())
-        println(alteningAccount2.toJson().toJsonString())
-
-        println("--- Altening Account API ---")
-        val alteningAccount = AlteningAccount.generateAccount(apiToken)
-        println(alteningAccount.login())
-        println(alteningAccount.toJson().toJsonString())
-
-        assertTrue(true)
-    }
-
-    @Test
-    fun testSession() {
-        val sessionToken = ""
-
-        val sessionAccount = SessionAccount.fromToken(sessionToken)
-        println(sessionAccount.login())
-        println(sessionAccount.toJson().toJsonString())
-
-        assertTrue(true)
-    }
+//    @Test
+//    fun testSession() {
+//        val sessionToken = ""
+//
+//        val sessionAccount = SessionAccount.fromToken(sessionToken)
+//        println(sessionAccount.login())
+//        println(sessionAccount.toJson().toJsonString())
+//
+//        assertTrue(true)
+//    }
 
 }
