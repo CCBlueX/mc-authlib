@@ -14,7 +14,7 @@ import java.net.Proxy
 /**
  * A minecraft session account - premium account without credentials.
  */
-class SessionAccount(private var session: String) : MinecraftAccount("Cracked") {
+class SessionAccount(private var session: String) : MinecraftAccount(AccountType.SESSION) {
 
     /**
      * Used for JSON deserialize.

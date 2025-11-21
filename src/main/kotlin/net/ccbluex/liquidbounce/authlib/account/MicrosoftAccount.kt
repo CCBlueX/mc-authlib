@@ -9,9 +9,8 @@ import net.ccbluex.liquidbounce.authlib.compat.OAuthServer
 import net.ccbluex.liquidbounce.authlib.compat.Session
 import net.ccbluex.liquidbounce.authlib.utils.*
 import java.net.Proxy
-import java.util.*
 
-class MicrosoftAccount : MinecraftAccount("Microsoft") {
+class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
 
     private var accessToken = ""
     private var refreshToken = ""

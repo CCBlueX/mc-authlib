@@ -12,13 +12,11 @@ import net.ccbluex.liquidbounce.authlib.bantracker.Ban
 import net.ccbluex.liquidbounce.authlib.compat.GameProfile
 import net.ccbluex.liquidbounce.authlib.compat.Session
 import net.ccbluex.liquidbounce.authlib.utils.GSON
-import net.ccbluex.liquidbounce.authlib.utils.boolean
 import net.ccbluex.liquidbounce.authlib.utils.set
-import net.ccbluex.liquidbounce.authlib.utils.string
 import java.lang.reflect.Type
 import java.util.Collections
 
-sealed class MinecraftAccount(val type: String) {
+sealed class MinecraftAccount(val type: AccountType) {
 
     var profile: GameProfile? = null
 
@@ -28,7 +26,7 @@ sealed class MinecraftAccount(val type: String) {
     var favorite: Boolean = false
         private set
 
-    var bans: MutableMap<String, Ban> = hashMapOf<String, Ban>()
+    var bans: MutableMap<String, Ban> = hashMapOf()
         internal set
 
     /**
@@ -189,7 +187,6 @@ sealed class MinecraftAccount(val type: String) {
             hashMapOf(
                 "AlteningAccount" to AlteningAccount::class.java,
                 "CrackedAccount" to CrackedAccount::class.java,
-                "EasyMCAccount" to EasyMCAccount::class.java,
                 "MicrosoftAccount" to MicrosoftAccount::class.java,
                 "SessionAccount" to SessionAccount::class.java,
             )
@@ -199,7 +196,6 @@ sealed class MinecraftAccount(val type: String) {
             hashMapOf(
                 AlteningAccount::class.java to "AlteningAccount",
                 CrackedAccount::class.java to "CrackedAccount",
-                EasyMCAccount::class.java to "EasyMCAccount",
                 MicrosoftAccount::class.java to "MicrosoftAccount",
                 SessionAccount::class.java to "SessionAccount",
             )

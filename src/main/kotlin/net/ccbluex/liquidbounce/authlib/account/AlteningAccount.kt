@@ -23,7 +23,7 @@ val alteningEnvironment = Environment(ALTENING_SESSION, "https://api.minecraftse
  * @constructor Creates an AlteningAccount object with the specified type.
  * @param type The type of the account.
  */
-class AlteningAccount(var accountToken: String) : MinecraftAccount("TheAltening") {
+class AlteningAccount(var accountToken: String) : MinecraftAccount(AccountType.THEALTENING) {
 
     /**
      * Used for JSON deserialize.

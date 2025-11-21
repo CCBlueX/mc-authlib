@@ -16,7 +16,7 @@ import java.net.Proxy
  * A minecraft cracked account - has no password and no access to premium online servers
  */
 class CrackedAccount(private val username: String, private var online: Boolean = false)
-    : MinecraftAccount("Cracked") {
+    : MinecraftAccount(AccountType.CRACKED) {
 
     /**
      * Used for JSON deserialize.
