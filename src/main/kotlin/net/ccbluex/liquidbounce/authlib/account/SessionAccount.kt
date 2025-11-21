@@ -14,7 +14,7 @@ import java.net.Proxy
 /**
  * A minecraft session account - premium account without credentials.
  */
-class SessionAccount(private val session: String) : MinecraftAccount("Cracked") {
+class SessionAccount(private var session: String) : MinecraftAccount("Cracked") {
 
     /**
      * Used for JSON deserialize.
@@ -47,6 +47,7 @@ class SessionAccount(private val session: String) : MinecraftAccount("Cracked") 
 
     override fun toRawJson(json: JsonObject) {
         json["name"] = profile!!.username
+        json["accessToken"] = session
         if (profile!!.uuid != null) {
             json["uuid"] = profile!!.uuid.toString()
         }
@@ -55,6 +56,7 @@ class SessionAccount(private val session: String) : MinecraftAccount("Cracked") 
     override fun fromRawJson(json: JsonObject) {
         val name = json.string("name")!!
         val uuid = if (json.has("uuid")) parseUuid(json.string("uuid")!!) else null
+        session = json.string("accessToken")!!
         profile = GameProfile(name, uuid)
     }
 }
