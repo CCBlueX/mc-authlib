@@ -191,6 +191,17 @@ class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
             return OAuthServer(handler, authMethod).also { it.start() }
         }
 
+        /**
+         * Create a new [MicrosoftAccount] from Microsoft Refresh token
+         */
+        fun buildFromRefreshToken(token: String): MicrosoftAccount {
+            return MicrosoftAccount().also {
+                it.authMethod = AuthMethod.MICROSOFT2
+                it.refreshToken = token
+                it.refresh()
+            }
+        }
+
         fun replaceKeys(method: AuthMethod, string: String)
             = string.replace("<client_id>", method.clientId)
                 .replace("<redirect_uri>", method.redirectUri)
@@ -201,6 +212,12 @@ class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
 
         MICROSOFT(
             "00000000441cc96b",
+            "https://login.live.com/oauth20_desktop.srf",
+            "service::user.auth.xboxlive.com::MBI_SSL",
+            "<access_token>"
+        ),
+        MICROSOFT2(
+            "00000000402B5328",
             "https://login.live.com/oauth20_desktop.srf",
             "service::user.auth.xboxlive.com::MBI_SSL",
             "<access_token>"
