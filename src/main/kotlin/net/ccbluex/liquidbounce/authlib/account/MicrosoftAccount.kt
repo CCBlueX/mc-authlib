@@ -196,7 +196,7 @@ class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
          */
         fun buildFromRefreshToken(token: String): MicrosoftAccount {
             return MicrosoftAccount().also {
-                it.authMethod = AuthMethod.MICROSOFT2
+                it.authMethod = AuthMethod.GENUINE_MICROSOFT
                 it.refreshToken = token
                 it.refresh()
             }
@@ -216,7 +216,7 @@ class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
             "service::user.auth.xboxlive.com::MBI_SSL",
             "<access_token>"
         ),
-        MICROSOFT2(
+        GENUINE_MICROSOFT(
             "00000000402B5328",
             "https://login.live.com/oauth20_desktop.srf",
             "service::user.auth.xboxlive.com::MBI_SSL",
