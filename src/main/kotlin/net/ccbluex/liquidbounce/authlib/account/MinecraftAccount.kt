@@ -177,7 +177,7 @@ sealed class MinecraftAccount(val type: AccountType) {
         fun fromName(name: String): MinecraftAccount {
             return if (name.startsWith("ms@")) {
                 val realName = name.substring(3)
-                MicrosoftAccount.buildFromAuthCode(realName, MicrosoftAccount.AuthMethod.MICROSOFT)
+                MicrosoftAccount.buildFromAuthCode(realName, MicrosoftAccount.AuthMethod.MINECRAFT_NINTENDO_SWITCH)
             } else {
                 CrackedAccount(username = name)
             }

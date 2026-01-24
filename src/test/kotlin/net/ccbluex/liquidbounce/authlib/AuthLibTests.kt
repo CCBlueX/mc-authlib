@@ -1,12 +1,9 @@
 package net.ccbluex.liquidbounce.authlib
 
 import com.google.gson.JsonObject
-import net.ccbluex.liquidbounce.authlib.account.AlteningAccount
 import net.ccbluex.liquidbounce.authlib.account.MicrosoftAccount
 import net.ccbluex.liquidbounce.authlib.account.MinecraftAccount
-import net.ccbluex.liquidbounce.authlib.account.SessionAccount
 import net.ccbluex.liquidbounce.authlib.bantracker.Ban
-import net.ccbluex.liquidbounce.authlib.manage.AccountSerializer
 import net.ccbluex.liquidbounce.authlib.utils.set
 import net.ccbluex.liquidbounce.authlib.utils.toJsonString
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -72,7 +69,7 @@ class AuthLibTests {
             override fun authError(error: String) {
                 println("Auth error: $error")
             }
-        }, MicrosoftAccount.AuthMethod.AZURE_APP)
+        }, MicrosoftAccount.AuthMethod.LIQUIDBOUNCE)
 
         assertTrue(true)
     }

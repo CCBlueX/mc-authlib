@@ -18,7 +18,7 @@ import java.util.concurrent.Executors
  */
 class OAuthServer(
     val handler: MicrosoftAccount.OAuthHandler,
-    private val authMethod: MicrosoftAccount.AuthMethod = MicrosoftAccount.AuthMethod.AZURE_APP,
+    private val authMethod: MicrosoftAccount.AuthMethod = MicrosoftAccount.AuthMethod.LIQUIDBOUNCE,
     private val httpServer: HttpServer = HttpServer.create(InetSocketAddress("localhost", oauthPort), 0),
     private val context: String = "/login"
 ) {

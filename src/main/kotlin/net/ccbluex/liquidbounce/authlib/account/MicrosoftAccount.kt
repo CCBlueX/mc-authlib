@@ -14,7 +14,7 @@ class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
 
     private var accessToken = ""
     private var refreshToken = ""
-    private var authMethod = AuthMethod.MICROSOFT
+    private var authMethod = AuthMethod.MINECRAFT_PC
 
     override fun login(): Pair<Session, YggdrasilAuthenticationService> {
         if (profile?.uuid == null || accessToken.isEmpty()) {
@@ -187,7 +187,7 @@ class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
         /**
          * Create a new [MicrosoftAccount] from OAuth
          */
-        fun buildFromOpenBrowser(handler: OAuthHandler, authMethod: AuthMethod = AuthMethod.AZURE_APP): OAuthServer {
+        fun buildFromOpenBrowser(handler: OAuthHandler, authMethod: AuthMethod = AuthMethod.LIQUIDBOUNCE): OAuthServer {
             return OAuthServer(handler, authMethod).also { it.start() }
         }
 
@@ -196,7 +196,7 @@ class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
          */
         fun buildFromRefreshToken(token: String): MicrosoftAccount {
             return MicrosoftAccount().also {
-                it.authMethod = AuthMethod.GENUINE_MICROSOFT
+                it.authMethod = AuthMethod.MINECRAFT_PC
                 it.refreshToken = token
                 it.refresh()
             }
@@ -210,24 +210,53 @@ class MicrosoftAccount : MinecraftAccount(AccountType.MICROSOFT) {
 
     enum class AuthMethod(val clientId: String, val redirectUri: String, val scope: String, val rpsTicketRule: String) {
 
-        MICROSOFT(
-            "00000000441cc96b",
-            "https://login.live.com/oauth20_desktop.srf",
-            "service::user.auth.xboxlive.com::MBI_SSL",
-            "<access_token>"
-        ),
-        GENUINE_MICROSOFT(
+        /**
+         * Official Minecraft auth method.
+         * It is NOT recommended to be used for production software, however,
+         * we might need it for testing purposes.
+         *
+         * @see https://dreta.dev/blog/2023/08/15/how-minecraft-launchers-work/
+         */
+        MINECRAFT_PC(
             "00000000402B5328",
             "https://login.live.com/oauth20_desktop.srf",
             "service::user.auth.xboxlive.com::MBI_SSL",
             "<access_token>"
         ),
+
+        /**
+         * Official Minecraft Nintendo Switch auth method.
+         * It is NOT recommended to be used for production software, however,
+         *we might need it for testing purposes.
+         *
+         * @see https://docs.rs/crate/azalea-auth/latest/source/src/auth.rs#285-286
+         */
+        MINECRAFT_NINTENDO_SWITCH(
+            "00000000441cc96b",
+            "https://login.live.com/oauth20_desktop.srf",
+            "service::user.auth.xboxlive.com::MBI_SSL",
+            "<access_token>"
+        ),
+
+        /**
+         * We registered our own Azure application for LiquidBounce.
+         * This does not allow email and password authentication; however,
+         * it is more secure since it forces users to use OAuth.
+         */
+        LIQUIDBOUNCE(
+            "0add8caf-2cc6-4546-b798-c3d171217dd9",
+            "http://localhost:${oauthPort}/login",
+            "XboxLive.signin%20offline_access",
+            "d=<access_token>"
+        ),
+
+        @Deprecated("Replaced by LIQUIDBOUNCE", ReplaceWith("LIQUIDBOUNCE"))
         AZURE_APP(
             "0add8caf-2cc6-4546-b798-c3d171217dd9",
             "http://localhost:${oauthPort}/login",
             "XboxLive.signin%20offline_access",
             "d=<access_token>"
-        )
+        );
 
     }
 
