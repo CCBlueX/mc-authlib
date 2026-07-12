@@ -7,6 +7,10 @@ import net.ccbluex.liquidbounce.authlib.utils.decode
 import net.ccbluex.liquidbounce.authlib.utils.parseUuid
 import java.util.*
 
+@Deprecated(
+    message = "Use new API services instead",
+    level = DeprecationLevel.WARNING,
+)
 class GameProfileRepository(val baseUrl: String) {
 
     @Deprecated(
