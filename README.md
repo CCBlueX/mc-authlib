@@ -3,7 +3,7 @@ MC AuthLib is a library designed to make the integration of different account ty
 Based on [Elixir](https://github.com/UnlegitMC/Elixir) - a discontinued project by UnlegitMC.
 
 ## Used by
-- [LiquidBounce](https://liquidbounce.net/) - A free Minecraft Hacked Client for Fabric 1.21.5
+- [LiquidBounce](https://liquidbounce.net/) - A free Minecraft Hacked Client for Fabric 26.2
 
 # Features
 - Login to Minecraft using different account types
