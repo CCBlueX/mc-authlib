@@ -18,6 +18,7 @@ class GameProfileRepository(val baseUrl: String) {
 
     companion object {
         const val DEFAULT_BASE_URL = "https://api.minecraftservices.com"
+        private const val API_MOJANG_BASE_URL = "https://api.mojang.com"
 
         @JvmField
         val Default = GameProfileRepository(DEFAULT_BASE_URL)
@@ -30,7 +31,7 @@ class GameProfileRepository(val baseUrl: String) {
      * uses a different API endpoint for bulk requests and is therefore not suitable for this use case.
      */
     fun fetchUuidByUsername(username: String): UUID? = runCatching {
-        val (code, text) = HttpUtils.get("$baseUrl/users/profiles/minecraft/$username")
+        val (code, text) = HttpUtils.get("$API_MOJANG_BASE_URL/users/profiles/minecraft/$username")
 
         if (code != 200) {
             error("Failed to get UUID of $username")
