@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "net.ccbluex"
-version = "1.7.0"
+version = "1.7.1"
 
 val projectDisplayName = "MC AuthLib"
 val projectDescription = "MC AuthLib is a library designed to make the integration of different Minecraft account types easier."
