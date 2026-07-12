@@ -50,9 +50,14 @@ dependencies {
     api(libs.authlib)
     api(libs.thealtening)
     api(libs.okhttp)
+    api(libs.retrofit)
+    api(libs.retrofit.converter.gson)
+    api(libs.retrofit.converter.scalars)
 //    api(libs.okhttp.coroutines)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.coroutines.core)
+    testImplementation(libs.okhttp.mockwebserver)
 //    testImplementation(libs.coroutines.test)
 }
 

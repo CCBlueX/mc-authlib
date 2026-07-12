@@ -7,6 +7,7 @@ gson = "2.11.0"
 slf4j = "2.0.16"
 authlib = "7.0.61" # 1.21.11
 thealtening = "4.1.0"
+retrofit = "2.11.0"
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -16,6 +17,7 @@ dokkaJavadoc = { id = "org.jetbrains.dokka-javadoc", version.ref = "dokka" }
 [libraries]
 dokka-ktAsJava = { module = "org.jetbrains.dokka:kotlin-as-java-plugin", version.ref = "dokka" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 okhttp-coroutines = { module = "com.squareup.okhttp3:okhttp-coroutines", version.ref = "okhttp" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
@@ -23,3 +25,6 @@ authlib = { module = "com.mojang:authlib", version.ref = "authlib" }
 thealtening = { module = "com.thealtening.api:api", version.ref = "thealtening" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit-converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
